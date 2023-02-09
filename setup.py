@@ -10,7 +10,7 @@ LICENSE = (HERE / 'LICENSE').read_text()
 
 setup(
     name="hasiicommon",
-    version="0.0.1",
+    version="0.0.3",
     author='Humberto A. Sanchez II',
     author_email='Humberto.A.Sanchez.II@gmail.com',
     maintainer='Humberto A. Sanchez II',
@@ -20,13 +20,21 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/hasii2011/hasiicommon",
     package_data={
-        'hasiicommon':        ['py.typed'],
-        'hasiicommon.ui':     ['py.typed'],
-        'hasiicommon.widget': ['py.typed'],
+        'hasiicommon':           ['py.typed'],
+        'hasiicommon.resources':              ['py.typed'],
+        'hasiicommon.resources.images':       ['py.typed'],
+        'hasiicommon.resources.images.icons': ['py.typed'],
+        'hasiicommon.resources.images.icons.embedded16': ['py.typed'],
+        'hasiicommon.resources.images.icons.embedded32': ['py.typed'],
+
+        'hasiicommon.ui':        ['py.typed'],
+        'hasiicommon.ui.widget': ['py.typed'],
     },
 
     packages=[
-        'hasiicommon', 'hasiicommon.ui', 'hasiicommon.ui.widgets'
+        'hasiicommon',
+        'hasiicommon.resources',
+        'hasiicommon.ui', 'hasiicommon.ui.widgets'
     ],
     install_requires=['Deprecated~=1.2.13', 'wxPython~=4.2.0'],
 )
