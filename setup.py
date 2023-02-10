@@ -10,7 +10,7 @@ LICENSE = (HERE / 'LICENSE').read_text()
 
 setup(
     name="hasiicommon",
-    version="0.0.5",
+    version="0.0.6",
     author='Humberto A. Sanchez II',
     author_email='Humberto.A.Sanchez.II@gmail.com',
     maintainer='Humberto A. Sanchez II',
@@ -27,8 +27,8 @@ setup(
         'hasiicommon.resources.images.icons.embedded16': ['py.typed'],
         'hasiicommon.resources.images.icons.embedded32': ['py.typed'],
 
-        'hasiicommon.ui':        ['py.typed'],
-        'hasiicommon.ui.widget': ['py.typed'],
+        'hasiicommon.ui':         ['py.typed'],
+        'hasiicommon.ui.widgets': ['py.typed'],
     },
 
     packages=[
