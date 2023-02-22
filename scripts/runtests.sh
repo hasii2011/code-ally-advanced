@@ -27,10 +27,9 @@ function checkStatus {
 
 changeToProjectRoot
 
-echo 'We will have tests some day'
-#python3 -Wdefault -m tests.TestAll
-#status=$?
-#
-#checkStatus ${status} TestAll
-#exit ${status}
+python3 -Wdefault -m tests.TestAll
+status=$?
+
+checkStatus ${status} TestAll
+exit ${status}
 
