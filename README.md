@@ -6,7 +6,7 @@
 Host common artifacts for various projects I am developing
 
 
-![Humberto's Modified Logo](https://raw.githubusercontent.com/wiki/hasii2011/gittodoistclone/images/SillyGitHub.png)
+![Humberto's Modified Logo](./developer/SillyGitHub.png)
 
 I am concerned about GitHub's Copilot project
 
@@ -29,5 +29,4 @@ code in Copilot.
 A repository owner may opt out of Copilot by changing Settings --> GitHub Copilot.
 
 I have done so.
-
 
