@@ -3,7 +3,7 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/hasii2011/hasiicommon/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/hasii2011/hasiicommon/tree/master)
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
-Host common artifacts for various projects I am developing
+Host common UI artifacts for various projects I am developing
 
 
 ![Humberto's Modified Logo](./developer/SillyGitHub.png)

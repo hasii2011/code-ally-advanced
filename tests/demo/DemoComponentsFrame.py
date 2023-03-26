@@ -8,8 +8,8 @@ from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedScrolledPanel
 from wx.lib.sized_controls import SizedStaticBox
 
-from hasiicommon.Dimensions import Dimensions
-from hasiicommon.Position import Position
+from hasiihelper.Dimensions import Dimensions
+from hasiihelper.Position import Position
 from hasiicommon.ui.widgets.DimensionsControl import DimensionsControl
 from hasiicommon.ui.widgets.PositionControl import PositionControl
 

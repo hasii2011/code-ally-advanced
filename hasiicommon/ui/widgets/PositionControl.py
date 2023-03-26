@@ -6,7 +6,7 @@ from logging import getLogger
 
 from wx.lib.sized_controls import SizedPanel
 
-from hasiicommon.Position import Position
+from hasiihelper.Position import Position
 
 from hasiicommon.ui.widgets.DualSpinnerControl import DualSpinnerControl
 from hasiicommon.ui.widgets.DualSpinnerControl import SpinnerValues

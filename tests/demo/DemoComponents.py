@@ -5,13 +5,6 @@ from typing import cast
 from logging import Logger
 from logging import getLogger
 
-import logging
-import logging.config
-
-import json
-
-from pkg_resources import resource_filename
-
 from wx import DEFAULT_FRAME_STYLE
 from wx import ID_EXIT
 
@@ -24,6 +17,7 @@ from wx import NewIdRef as wxNewIdRef
 from wx.lib.sized_controls import SizedFrame
 from wx.lib.sized_controls import SizedPanel
 
+from tests.TestBase import TestBase
 from tests.demo.DemoComponentsFrame import DemoComponentsFrame
 
 
@@ -53,10 +47,9 @@ RESOURCES_PACKAGE_NAME: str = 'tests.resources'
 
 class DemoComponents(App):
 
-
     def __init__(self, redirect: bool):
 
-        DemoComponents.setUpLogging()
+        TestBase.setUpLogging()
 
         self.logger:          Logger          = getLogger(__name__)
 
@@ -115,26 +108,6 @@ class DemoComponents(App):
         self._x += INCREMENT_X
         self._y += INCREMENT_Y
         return x, y
-
-    @classmethod
-    def setUpLogging(cls):
-        """"""
-
-        loggingConfigFilename: str = cls.findLoggingConfig()
-
-        with open(loggingConfigFilename, 'r') as loggingConfigurationFile:
-            configurationDictionary = json.load(loggingConfigurationFile)
-
-        logging.config.dictConfig(configurationDictionary)
-        logging.logProcesses = False
-        logging.logThreads = False
-
-    @classmethod
-    def findLoggingConfig(cls) -> str:
-
-        fqFileName = resource_filename(RESOURCES_PACKAGE_NAME, JSON_LOGGING_CONFIG_FILENAME)
-
-        return fqFileName
 
 
 testApp: DemoComponents = DemoComponents(redirect=False)

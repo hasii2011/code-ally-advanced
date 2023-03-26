@@ -40,5 +40,5 @@ setup(
         'hasiicommon.resources.images.icons.embedded32',
         'hasiicommon.ui', 'hasiicommon.ui.widgets'
     ],
-    install_requires=['Deprecated~=1.2.13', 'wxPython~=4.2.0'],
+    install_requires=['hasiihelper==0.1.0','Deprecated~=1.2.13', 'wxPython~=4.2.0'],
 )
