@@ -1,6 +1,7 @@
 
 version: '2.1'
-
+# runtests is installed command from buildlackey
+# Updated to ignore missing environment variables
 orbs:
   python: circleci/python@2.1.1
 
@@ -33,9 +34,10 @@ jobs:
             pip install html-testRunner~=1.2.1
             pip install attrdict3
             pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04  wxPython
+            pip install buildlackey~=0.6.0
             pip install Deprecated~=1.2.13
-            pip install hasiihelper~=0.1.0
+            pip install hasiihelper~=0.2.0
       - run:
             name: run tests
             command: | 
-              scripts/runtests.sh
+              runtests

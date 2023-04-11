@@ -5,6 +5,19 @@
 
 Host common UI artifacts for various projects I am developing
 
+___
+
+Written by <a href="mailto:email@humberto.a.sanchez.ii@gmail.com?subject=Hello Humberto">Humberto A. Sanchez II</a>  (C) 2023
+
+## Note
+For all kind of problems, requests, enhancements, bug reports, etc.,
+please drop me an e-mail.
+
+## Developer Notes
+This project uses [buildlackey](https://github.com/hasii2011/buildlackey) for day to day development builds
+
+---
+
 
 ![Humberto's Modified Logo](./developer/SillyGitHub.png)
 
