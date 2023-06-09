@@ -36,7 +36,7 @@ jobs:
             pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04  wxPython
             pip install buildlackey~=0.8.1
             pip install Deprecated~=1.2.14
-            pip install hasiihelper~=0.2.0
+            pip install hasiihelper~=0.2.1
       - run:
             name: run tests
             command: | 

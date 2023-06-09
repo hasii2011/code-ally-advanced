@@ -12,5 +12,5 @@ typing_extensions==4.6.3
 Deprecated==1.2.14
 wxPython~=4.2.1
 
-hasiihelper==0.2.0
+hasiihelper==0.2.1
 buildlackey==0.8.1
