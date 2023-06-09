@@ -10,7 +10,7 @@ LICENSE = (HERE / 'LICENSE').read_text()
 
 setup(
     name="hasiicommon",
-    version="0.2.2",
+    version="0.3.0",
     author='Humberto A. Sanchez II',
     author_email='Humberto.A.Sanchez.II@gmail.com',
     maintainer='Humberto A. Sanchez II',
@@ -40,5 +40,5 @@ setup(
         'hasiicommon.resources.images.icons.embedded32',
         'hasiicommon.ui', 'hasiicommon.ui.widgets'
     ],
-    install_requires=['hasiihelper==0.2.0', 'Deprecated~=1.2.13', 'wxPython~=4.2.0'],
+    install_requires=['hasiihelper==0.2.0', 'Deprecated~=1.2.13', 'wxPython~=4.2.1'],
 )
