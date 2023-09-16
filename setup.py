@@ -1,5 +1,10 @@
+
 import pathlib
+
 from setuptools import setup
+
+from codeallyadvanced import __version__ as version
+
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -10,7 +15,7 @@ LICENSE = (HERE / 'LICENSE').read_text()
 
 setup(
     name="codeallyadvanced",
-    version="0.5.0",
+    version=version,
     author='Humberto A. Sanchez II',
     author_email='Humberto.A.Sanchez.II@gmail.com',
     maintainer='Humberto A. Sanchez II',
