@@ -8,8 +8,8 @@ from wx.lib.sized_controls import SizedPanel
 
 from hasiihelper.Dimensions import Dimensions
 
-from hasiicommon.ui.widgets.DualSpinnerControl import DualSpinnerControl
-from hasiicommon.ui.widgets.DualSpinnerControl import SpinnerValues
+from codeallyadvanced.ui.widgets.DualSpinnerControl import DualSpinnerControl
+from codeallyadvanced.ui.widgets.DualSpinnerControl import SpinnerValues
 
 
 class DimensionsControl(DualSpinnerControl):

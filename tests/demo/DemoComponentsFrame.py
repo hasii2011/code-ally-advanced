@@ -10,8 +10,8 @@ from wx.lib.sized_controls import SizedStaticBox
 
 from hasiihelper.Dimensions import Dimensions
 from hasiihelper.Position import Position
-from hasiicommon.ui.widgets.DimensionsControl import DimensionsControl
-from hasiicommon.ui.widgets.PositionControl import PositionControl
+from codeallyadvanced.ui.widgets.DimensionsControl import DimensionsControl
+from codeallyadvanced.ui.widgets.PositionControl import PositionControl
 
 
 DEFAULT_WIDTH = 3000

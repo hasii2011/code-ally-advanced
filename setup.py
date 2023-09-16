@@ -9,36 +9,36 @@ README = (HERE / "README.md").read_text()
 LICENSE = (HERE / 'LICENSE').read_text()
 
 setup(
-    name="hasiicommon",
+    name="codeallyadvanced",
     version="0.5.0",
     author='Humberto A. Sanchez II',
     author_email='Humberto.A.Sanchez.II@gmail.com',
     maintainer='Humberto A. Sanchez II',
     maintainer_email='humberto.a.sanchez.ii@gmail.com',
-    description='Humberto`s Common Stuff',
+    description='Humberto`s Common UI Stuff',
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/hasii2011/code-ally-basic",
+    url="https://github.com/hasii2011/code-ally-advanced",
     package_data={
-        'hasiicommon':           ['py.typed'],
-        'hasiicommon.resources':              ['py.typed'],
-        'hasiicommon.resources.images':       ['py.typed'],
-        'hasiicommon.resources.images.icons': ['py.typed'],
-        'hasiicommon.resources.images.icons.embedded16': ['py.typed'],
-        'hasiicommon.resources.images.icons.embedded32': ['py.typed'],
+        'codeallyadvanced':                        ['py.typed'],
+        'codeallyadvanced.resources':              ['py.typed'],
+        'codeallyadvanced.resources.images':       ['py.typed'],
+        'codeallyadvanced.resources.images.icons': ['py.typed'],
+        'codeallyadvanced.resources.images.icons.embedded16': ['py.typed'],
+        'codeallyadvanced.resources.images.icons.embedded32': ['py.typed'],
 
-        'hasiicommon.ui':         ['py.typed'],
-        'hasiicommon.ui.widgets': ['py.typed'],
+        'codeallyadvanced.ui':         ['py.typed'],
+        'codeallyadvanced.ui.widgets': ['py.typed'],
     },
 
     packages=[
-        'hasiicommon',
-        'hasiicommon.resources',
-        'hasiicommon.resources.images',
-        'hasiicommon.resources.images.icons',
-        'hasiicommon.resources.images.icons.embedded16',
-        'hasiicommon.resources.images.icons.embedded32',
-        'hasiicommon.ui', 'hasiicommon.ui.widgets'
+        'codeallyadvanced',
+        'codeallyadvanced.resources',
+        'codeallyadvanced.resources.images',
+        'codeallyadvanced.resources.images.icons',
+        'codeallyadvanced.resources.images.icons.embedded16',
+        'codeallyadvanced.resources.images.icons.embedded32',
+        'codeallyadvanced.ui', 'codeallyadvanced.ui.widgets'
     ],
     install_requires=['codeallybasic~=0.5.2', 'Deprecated~=1.2.14', 'wxPython~=4.2.1'],
 )
