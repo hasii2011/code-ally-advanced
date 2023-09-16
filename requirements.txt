@@ -1,16 +1,16 @@
-wheel==0.40.0
-setuptools==67.8.0
+wheel==0.41.2
+setuptools==68.2.2
 twine==4.0.2
-build==0.10.0
+build==1.0.3
 html-testRunner~=1.2.1
-mypy==1.3.0
+mypy==1.5.1
 mypy-extensions==1.0.0
-types-Deprecated==1.2.9.2
-types-setuptools==67.8.0.0
-typing_extensions==4.6.3
+types-Deprecated==1.2.9.3
+types-setuptools==68.2.0.0
+typing_extensions==4.7.1
 
 Deprecated==1.2.14
 wxPython~=4.2.1
 
-hasiihelper==0.2.1
-buildlackey==0.8.1
+codeallybasic==0.5.2
+buildlackey==1.3.0

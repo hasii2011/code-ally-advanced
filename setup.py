@@ -10,7 +10,7 @@ LICENSE = (HERE / 'LICENSE').read_text()
 
 setup(
     name="hasiicommon",
-    version="0.3.1",
+    version="0.5.0",
     author='Humberto A. Sanchez II',
     author_email='Humberto.A.Sanchez.II@gmail.com',
     maintainer='Humberto A. Sanchez II',
@@ -18,7 +18,7 @@ setup(
     description='Humberto`s Common Stuff',
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/hasii2011/hasiicommon",
+    url="https://github.com/hasii2011/code-ally-basic",
     package_data={
         'hasiicommon':           ['py.typed'],
         'hasiicommon.resources':              ['py.typed'],
@@ -40,5 +40,5 @@ setup(
         'hasiicommon.resources.images.icons.embedded32',
         'hasiicommon.ui', 'hasiicommon.ui.widgets'
     ],
-    install_requires=['hasiihelper==0.2.1', 'Deprecated~=1.2.14', 'wxPython~=4.2.1'],
+    install_requires=['codeallybasic~=0.5.2', 'Deprecated~=1.2.14', 'wxPython~=4.2.1'],
 )

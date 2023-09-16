@@ -1,8 +1,8 @@
-<img src="./developer/agpl-license-web-badge-version-2-256x48.png"/> 
+```
+![](https://github.com/hasii2011/code-ally-basic/blob/master/developer/agpl-license-web-badge-version-2-256x48.png "AGPL")
+```
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/hasii2011/hasiicommon/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/hasii2011/hasiicommon/tree/master)
-[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
-
+![CircleCI](https://dl.circleci.com/status-badge/img/gh/hasii2011/code-ally-advanced/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/hasii2011/code-ally-advanced/tree/master)
 Host common UI artifacts for various projects I am developing
 
 ___
@@ -18,12 +18,11 @@ This project uses [buildlackey](https://github.com/hasii2011/buildlackey) for da
 
 ---
 
+![](https://github.com/hasii2011/code-ally-basic/blob/master/developer/SillyGitHub.png)
 
-![Humberto's Modified Logo](./developer/SillyGitHub.png)
+== I am using GitHub under protest ==
 
-I am concerned about GitHub's Copilot project
-
-
+This project is currently hosted on GitHub.  
 
 I urge you to read about the
 [Give up GitHub](https://GiveUpGitHub.org) campaign from
@@ -36,10 +35,5 @@ I continue to use GitHub because it offers the services I need for free.  But, I
 to monitor their terms of service.
 
 Any use of this project's code by GitHub Copilot, past or present, is done
-without my permission.  I do not consent to GitHub's use of this project's
+without our permission.  We do not consent to GitHub's use of this project's
 code in Copilot.
-
-A repository owner may opt out of Copilot by changing Settings --> GitHub Copilot.
-
-I have done so.
-
