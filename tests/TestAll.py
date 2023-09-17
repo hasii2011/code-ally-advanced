@@ -26,10 +26,10 @@ class TestAll:
     The class that can run our unit tests in various formats
     """
     #
-    NOT_TESTS: List[str] = ['TestAll', 'TestBase',]
+    NOT_TESTS: List[str] = ['TestAll', 'TestBase']
 
     VERBOSITY_QUIET:   int = 0  # Print the total numbers of tests executed and the global result
-    VERBOSITY_DEFAULT: int = 1  # VERBOSITY_QUIET plus a dot for every successful test or a F for every failure
+    VERBOSITY_DEFAULT: int = 1  # VERBOSITY_QUIET plus a dot for every successful test or an F for every failure
     VERBOSITY_VERBOSE: int = 2  # Print help string of every test and the result
     VERBOSITY_LOUD:    int = 3  # ??
 
@@ -165,5 +165,3 @@ def main():
 if __name__ == "__main__":
     cliStatus: int = main()
     exit(cliStatus)
-
-

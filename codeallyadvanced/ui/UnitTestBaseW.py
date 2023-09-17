@@ -5,7 +5,7 @@ from wx import Frame
 from wx import ID_ANY
 from wx import ScrolledWindow
 
-from hasiihelper.UnitTestBase import UnitTestBase
+from codeallybasic.UnitTestBase import UnitTestBase
 
 
 class DummyApp(App):
