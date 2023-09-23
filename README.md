@@ -1,6 +1,6 @@
 ![](https://github.com/hasii2011/code-ally-basic/blob/master/developer/agpl-license-web-badge-version-2-256x48.png "AGPL")
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/hasii2011/code-ally-advanced/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/hasii2011/code-ally-advanced/tree/master)
-
+[![PyPI version](https://badge.fury.io/py/codeallyadvanced.svg)](https://badge.fury.io/py/codeallyadvanced)
 
 Host common UI artifacts for various projects I am developing
 
