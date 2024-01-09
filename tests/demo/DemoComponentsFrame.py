@@ -3,13 +3,14 @@ from logging import Logger
 from logging import getLogger
 
 from wx import Window
-from wx.lib.sized_controls import SizedPanel
 
+from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedScrolledPanel
 from wx.lib.sized_controls import SizedStaticBox
 
 from codeallybasic.Dimensions import Dimensions
 from codeallybasic.Position import Position
+
 from codeallyadvanced.ui.widgets.DimensionsControl import DimensionsControl
 from codeallyadvanced.ui.widgets.PositionControl import PositionControl
 
