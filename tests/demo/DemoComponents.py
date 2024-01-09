@@ -17,7 +17,8 @@ from wx import NewIdRef as wxNewIdRef
 from wx.lib.sized_controls import SizedFrame
 from wx.lib.sized_controls import SizedPanel
 
-from tests.TestBase import TestBase
+from codeallybasic.UnitTestBase import UnitTestBase
+
 from tests.demo.DemoComponentsFrame import DemoComponentsFrame
 
 
@@ -49,7 +50,7 @@ class DemoComponents(App):
 
     def __init__(self, redirect: bool):
 
-        TestBase.setUpLogging()
+        UnitTestBase.setUpLogging()
 
         self.logger:          Logger          = getLogger(__name__)
 

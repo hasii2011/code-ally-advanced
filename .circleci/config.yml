@@ -16,7 +16,7 @@ workflows:
 jobs:
   build:
     docker:
-      - image: cimg/python:3.10-browsers
+      - image: cimg/python:3.11-browsers
     executor: python/default
     steps:
       - checkout
@@ -34,10 +34,9 @@ jobs:
             pip install html-testRunner~=1.2.1
             pip install attrdict3
             pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04  wxPython
-            pip install buildlackey~=0.8.1
-            pip install Deprecated~=1.2.14
-            pip install hasiihelper~=0.2.1
+            pip install buildlackey~=1.6.3
+            pip install codeallybasic~=1.0.0
       - run:
             name: run tests
             command: | 
-              runtests
+              unittests

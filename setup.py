@@ -45,5 +45,5 @@ setup(
         'codeallyadvanced.resources.images.icons.embedded32',
         'codeallyadvanced.ui', 'codeallyadvanced.ui.widgets'
     ],
-    install_requires=['codeallybasic~=0.5.2', 'Deprecated~=1.2.14', 'wxPython~=4.2.1'],
+    install_requires=['codeallybasic~=1.0.0', 'wxPython~=4.2.1'],
 )
