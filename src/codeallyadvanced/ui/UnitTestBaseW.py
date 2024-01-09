@@ -23,13 +23,14 @@ class UnitTestBaseW(UnitTestBase):
         super().setUp()
 
         self._app:   DummyApp = DummyApp()
-        #  Create frame
+
         baseFrame: Frame = Frame(None, ID_ANY, "", size=(10, 10))
-        # noinspection PyTypeChecker
-        umlFrame = ScrolledWindow(baseFrame)
+
+        umlFrame: ScrolledWindow = ScrolledWindow(baseFrame)
         umlFrame.Show(True)
 
-        self._listeningWindow = umlFrame
+        self._listeningWindow: ScrolledWindow = umlFrame    # For event handling
+        self._topLevelWindow:  ScrolledWindow = umlFrame    # For use as a parent window
 
     def tearDown(self):
         self._app.OnExit()
