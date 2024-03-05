@@ -14,7 +14,7 @@ from codeallyadvanced.ui.widgets.DualSpinnerControl import SpinnerValues
 
 class PositionControl(DualSpinnerControl):
     """
-    A facade around the basic dual spinner control;   Essentially
+    A facade around the basic dual-spinner control;   Essentially
         * Converts the spinner values to and from the Position type;
         * Handles the spinner callback
         * Forwards the spinner values as Position values
@@ -47,7 +47,8 @@ class PositionControl(DualSpinnerControl):
         self._position = newValue
         self.spinnerValues = SpinnerValues(value0=newValue.x, value1=newValue.y)
 
-    position = property(fset=_setPosition, doc='Write only property to set values')
+    # noinspection PyTypeChecker
+    position = property(fdel=None, fget=None, fset=_setPosition, doc='Write only property to set values')
 
     def _onSpinValueChangedCallback(self, spinnerValues: SpinnerValues):
         self.logger.info(f'{spinnerValues}')

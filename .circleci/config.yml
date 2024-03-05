@@ -35,7 +35,7 @@ jobs:
             pip install attrdict3
             pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04  wxPython
             pip install buildlackey~=1.6.3
-            pip install codeallybasic==1.1.0
+            pip install codeallybasic==1.2.0
       - run:
             name: run tests
             command: | 
