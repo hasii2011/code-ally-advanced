@@ -98,6 +98,7 @@ class DualSpinnerControl(SizedStaticBox):
         self._spinner1.SetValue(spinnerValues.value1)
         self.dscLogger.info(f'range: {self._spinner0.GetRange()} - {self._spinner0.GetValue()=} {self._spinner1.GetValue()=}')
 
+    # noinspection PyTypeChecker
     spinnerValues = property(fset=_setSpinnerValues, doc='Write only property to initialize spinner values')
 
     def enableControls(self, value: bool):

@@ -12,6 +12,8 @@ from codeallybasic.Dimensions import Dimensions
 from codeallybasic.Position import Position
 
 from codeallyadvanced.ui.widgets.DimensionsControl import DimensionsControl
+from codeallyadvanced.ui.widgets.MinMaxControl import MinMax
+from codeallyadvanced.ui.widgets.MinMaxControl import MinMaxControl
 from codeallyadvanced.ui.widgets.PositionControl import PositionControl
 
 
@@ -68,6 +70,11 @@ class DemoComponentsFrame(SizedScrolledPanel):
                                                                   valueChangedCallback=self._dimensionsChanged,
                                                                   setControlsSize=False)
 
+        minMaxX: MinMaxControl = MinMaxControl(sizedPanel=horizontalPanel, displayText='Minimum/Maximum Values',
+                                               minValue=-1024, maxValue=1024,
+                                               valueChangedCallback=self._onMinMaxChanged,
+                                               setControlsSize=False)
+
         # noinspection PyUnresolvedReferences
         positionControl.SetSizerProps(expand=True, proportion=1)
         # noinspection PyUnresolvedReferences
@@ -75,6 +82,7 @@ class DemoComponentsFrame(SizedScrolledPanel):
 
         positionControl.position = Position(0, 2048)
         dimensionsControls.dimensions   = Dimensions(480, 2048)
+        minMaxX.minMax = MinMax(minValue=-55, maxValue=50)
 
     def _positionChanged(self, newPosition: Position):
         self.logger.info(f'Position changed: {newPosition=}')
@@ -83,3 +91,8 @@ class DemoComponentsFrame(SizedScrolledPanel):
     def _dimensionsChanged(self, newDimensions: Dimensions):
         self.logger.info(f'Dimensions changed: {newDimensions=}')
         self._valuesChanged = True
+
+    def _onMinMaxChanged(self, minMaxX: MinMax):
+        self.logger.info(f'MinMax changed: {minMaxX=}')
+        self._valuesChanged = True
+
