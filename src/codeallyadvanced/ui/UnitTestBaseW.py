@@ -15,7 +15,7 @@ class DummyApp(App):
 
 class UnitTestBaseW(UnitTestBase):
     """
-    This base class is meant to be used by unit tests that need wx.App
+    This base class is meant to be used by unit tests that need a wx.App
     instance opened.
     """
 
