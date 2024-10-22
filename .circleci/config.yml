@@ -30,10 +30,9 @@ jobs:
             pip install --upgrade pip
             pip install wheel
             pip install setuptools
-            pip install six==1.16.0
-            pip install html-testRunner~=1.2.1
             pip install attrdict3
-            pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04  wxPython
+            pip install -v -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04  wxPython
+            pip install html-testRunner~=1.2.1
             pip install buildlackey~=1.6.3
             pip install codeallybasic==1.3.0
       - run:
