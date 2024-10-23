@@ -20,15 +20,16 @@ jobs:
     executor: python/default
     steps:
       - save_cache:
-        key: wxpython-cache
-        paths: wxPython
-      - restore_cache:
-        keys:
-          - wxpython-cache
+        key: pydeps-v01__{{ checksum "requirements.txt" }}
+        paths:
+          - ".venv"
+          - "~/.cache/pip"    # (pip cache dir
       - checkout
       - run:
           name: Install library dependencies
           command: |
+            virtualenv .venv;
+            echo "source .venv/bin/activate" >> $BASH_ENV;
             sudo apt update
             sudo apt install libnotify-dev
             sudo apt install libgtk-3-dev
