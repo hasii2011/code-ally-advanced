@@ -24,7 +24,7 @@ jobs:
         paths: wxPython
       - restore_cache:
         keys:
-          - wxPython-cache
+          - wxpython-cache
       - checkout
       - run:
           name: Install library dependencies
