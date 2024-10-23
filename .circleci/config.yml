@@ -19,6 +19,12 @@ jobs:
       - image: cimg/python:3.11-browsers
     executor: python/default
     steps:
+      - save_cache:
+        key: wxpython-cache
+        paths: wxPython
+      - restore_cache:
+        keys:
+          wxPython
       - checkout
       - run:
           name: Install library dependencies
