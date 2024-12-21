@@ -7,7 +7,7 @@ Host common UI artifacts for various projects I am developing
 ___
 Common UI artifacts for various projects I am developing
 
-Written by <a href="mailto:email@humberto.a.sanchez.ii@gmail.com?subject=Hello Humberto">Humberto A. Sanchez II</a>  (C) 2023
+Written by <a href="mailto:email@humberto.a.sanchez.ii@gmail.com?subject=Hello Humberto">Humberto A. Sanchez II</a>  (C) 2025
 
 ## Note
 For all kinds of problems, requests, enhancements, bug reports, etc.,
