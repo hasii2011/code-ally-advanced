@@ -3,14 +3,14 @@ requires = ['setuptools', 'wheel']
 build-backend = "setuptools.build_meta"
 
 [project]
-name='codeallyadvanced'
-dynamic = ["version"]
+name        = 'codeallyadvanced'
+dynamic     = ["version"]
 description = 'Humberto`s Common UI Stuff'
-readme = "README.md"
-license = {text = 'GNU AFFERO GENERAL PUBLIC LICENSE'}
-authors = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
-maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humbert.A.Sanchez.II@gmail.com'}]
-keywords = ['pyut', 'python', 'wxPython', 'UI']
+readme      = "README.md"
+license     = {text = 'GNU AFFERO GENERAL PUBLIC LICENSE'}
+authors     = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
+maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
+keywords    = ['pyut', 'python', 'wxPython', 'UI']
 
 dependencies = [
   'buildlackey>=1.7.0',
