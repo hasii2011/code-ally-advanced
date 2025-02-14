@@ -5,16 +5,40 @@ build-backend = "setuptools.build_meta"
 [project]
 name        = 'codeallyadvanced'
 dynamic     = ["version"]
-description = 'Humberto`s Common UI Stuff'
+description = 'Humberto`s Common wxPython UI Stuff'
 readme      = "README.md"
 license     = {text = 'GNU AFFERO GENERAL PUBLIC LICENSE'}
 authors     = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
 maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
-keywords    = ['pyut', 'python', 'wxPython', 'UI']
+keywords    = ['pyut', 'python', 'wxPython', 'UI', 'wxPython']
+
+classifiers = [
+  "Programming Language :: Python",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU Affero General Public License v3",
+  "Operating System :: MacOS :: MacOS X",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 dependencies = [
-  'buildlackey>=1.7.0',
+  'buildlackey>=1.8.1',
   'wxPython>=4.2.2'
+]
+
+[project.optional-dependencies]
+test = [
+    'mypy==1.15.0',
+    'codeallybasic==1.8.0',
+    'mypy-extensions==1.0.0',
+    'types-Deprecated==1.2.9.20240311',
+    'html-testRunner~=1.2.1',
+]
+
+deploy = [
+    "wheel==0.45.1",
+    "setuptools==75.8.0",
+    "twine==6.1.0",
+    "build==1.2.2.post1",
 ]
 
 [project.urls]

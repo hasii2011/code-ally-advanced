@@ -6,7 +6,7 @@ __pycache__/
 build/
 dist/
 codeallyadvanced.egg-info
-/pyenv-3.11.5/
+/pyenv-3.12.9/
 /pyenv-3.12.7/
 .envrc
 .python-version
