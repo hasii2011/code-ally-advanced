@@ -1,15 +1,16 @@
 
 from logging import Logger
 from logging import getLogger
-from pathlib import Path
 
-from wx import CommandEvent
-from wx import DD_DEFAULT_STYLE
-from wx import DirDialog
-from wx import EVT_BUTTON
+from pathlib import Path
 
 from wx import ID_ANY
 from wx import ID_OK
+from wx import DD_DEFAULT_STYLE
+from wx import EVT_BUTTON
+
+from wx import DirDialog
+from wx import CommandEvent
 from wx import Size
 from wx import TextCtrl
 
@@ -57,5 +58,5 @@ class DirectorySelector(SizedPanel):
         with DirDialog(None, 'Choose the Diagrams Directory', defaultPath=str(self._directoryPath), style=DD_DEFAULT_STYLE) as dlg:
 
             if dlg.ShowModal() == ID_OK:
-                self._directoryPath = dlg.GetPath()
-                self._textDiagramsDirectory.SetValue(self._directoryPath)
+                self._directoryPath = Path(dlg.GetPath())
+                self._textDiagramsDirectory.SetValue(str(self._directoryPath))
