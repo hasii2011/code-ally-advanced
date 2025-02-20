@@ -3,6 +3,7 @@ from logging import Logger
 from logging import getLogger
 
 from pathlib import Path
+from typing import Callable
 
 from wx import ID_ANY
 from wx import ID_OK
@@ -20,13 +21,30 @@ from wx.lib.sized_controls import SizedPanel
 
 from codeallyadvanced.resources.images import folder as ImgFolder
 
+DirectoryPathChangedCallback = Callable[[Path], None]
+
+CALLBACK_PARAMETER = 'pathChangedCallback'
+
 
 class DirectorySelector(SizedPanel):
     """
     """
     def __init__(self, *args, **kwargs):
+        """
+        We pass all keyword parameters to the sized panel except for 'callable'.  That
+        is for us.
+
+        Args:
+            *args:
+            **kwargs:
+        """
 
         self.logger: Logger = getLogger(__name__)
+
+        self._directorPathChangedCallback: DirectoryPathChangedCallback | None = kwargs.get(CALLBACK_PARAMETER, None)
+        if self._directorPathChangedCallback is not None:
+            kwargs.pop(CALLBACK_PARAMETER)
+
         super().__init__(*args, **kwargs)
 
         self.SetSizerType('horizontal')
@@ -60,3 +78,5 @@ class DirectorySelector(SizedPanel):
             if dlg.ShowModal() == ID_OK:
                 self._directoryPath = Path(dlg.GetPath())
                 self._textDiagramsDirectory.SetValue(str(self._directoryPath))
+                if self._directorPathChangedCallback is not None:
+                    self._directorPathChangedCallback(self._directoryPath)

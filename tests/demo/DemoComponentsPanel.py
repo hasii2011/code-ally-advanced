@@ -2,6 +2,10 @@
 from logging import Logger
 from logging import getLogger
 
+from pathlib import Path
+
+from wx import MessageDialog
+from wx import OK
 
 from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedStaticBox
@@ -66,10 +70,19 @@ class DemoComponentsPanel(SizedPanel):
 
     def _layoutDirectorySelector(self, parentPanel: SizedPanel):
 
-        labelledPanel: SizedStaticBox = SizedStaticBox(parentPanel, label='Directory Selector')
-        labelledPanel.SetSizerProps(expand=True, proportion=2)  # I want twice as much space as the spinner containers
+        verticalPanel: SizedPanel = SizedPanel(parentPanel)
+        verticalPanel.SetSizerType('vertical')
+        verticalPanel.SetSizerProps(expand=True, proportion=2)
 
-        directorySelector: DirectorySelector = DirectorySelector(parent=labelledPanel)
+        panelNoCallback: SizedStaticBox = SizedStaticBox(verticalPanel, label='Directory Selector')
+        panelNoCallback.SetSizerProps(expand=True, proportion=2)  # I want twice as much space as the spinner containers
+
+        DirectorySelector(parent=panelNoCallback)
+
+        panelWithCallback: SizedStaticBox = SizedStaticBox(verticalPanel, label='Directory Selector w/Callback')
+        panelWithCallback.SetSizerProps(expand=True, proportion=2)  # I want twice as much space as the spinner containers
+
+        DirectorySelector(parent=panelWithCallback, pathChangedCallback=self._pathChangedCallback)
 
     def _positionChanged(self, newPosition: Position):
         self.logger.info(f'Position changed: {newPosition=}')
@@ -82,3 +95,8 @@ class DemoComponentsPanel(SizedPanel):
     def _onMinMaxChanged(self, minMaxX: MinMax):
         self.logger.info(f'MinMax changed: {minMaxX=}')
         self._valuesChanged = True
+
+    def _pathChangedCallback(self, newPath: Path):
+
+        dlg: MessageDialog = MessageDialog(parent=None, message=f"New path: {newPath}", caption='Change', style=OK)
+        dlg.ShowModal()
