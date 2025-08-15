@@ -27,6 +27,15 @@ class TestCommon(UnitTestBase):
     def tearDown(self):
         super().tearDown()
 
+    def testWeirdWest(self):
+
+        sourcePosition:      Position = Position(x=700, y=250)
+        destinationPosition: Position = Position(x=700, y=300)
+
+        attachmentSide: AttachmentSide = Common.whereIsDestination(sourcePosition=sourcePosition, destinationPosition=destinationPosition)
+
+        self.assertEqual(AttachmentSide.EAST, attachmentSide, 'Miscalculation')
+
     def testDestinationWest(self):
         sourcePosition:      Position = Position(x=500, y=100)
         destinationPosition: Position = Position(x=100, y=100)
