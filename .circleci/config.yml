@@ -20,6 +20,8 @@ jobs:
     executor: python/default
     steps:
       - checkout
+      - restore_cache:
+          key: &deps1-cache deps1-{{ .Branch }}-{{ checksum "pyproject.toml" }}
       - run:
           name: Install library dependencies
           command: |
@@ -36,6 +38,10 @@ jobs:
             pip install six==1.16.0
             pip install attrdict3
             pip install wxPython
+      - save_cache:
+          key: *deps1-cache
+          paths:
+            - "venv"
       - run:
             name: run tests
             command: | 
