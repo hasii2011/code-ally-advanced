@@ -15,19 +15,17 @@ from wx import MiniFrame
 
 from wx import NewIdRef as wxNewIdRef
 from wx import Size
+from wx.lib.embeddedimage import PyEmbeddedImage
 
 from wx.lib.sized_controls import SizedFrame
 from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedStaticBox
 
-from codeallyadvanced.resources.images.icons.embedded32.UmlLollipop import embeddedImage as imageLollipop32
-from codeallyadvanced.resources.images.icons.embedded16.UmlLollipop import embeddedImage as imageLollipop16
-
-from codeallyadvanced.resources.images.icons.embedded32.UmlNote import embeddedImage as imageUmlNote32
-from codeallyadvanced.resources.images.icons.embedded16.UmlNote import embeddedImage as imageUmlNote16
-
-from codeallyadvanced.resources.images.icons.embedded32.UmlText import embeddedImage as imageUmlText32
-from codeallyadvanced.resources.images.icons.embedded16.UmlText import embeddedImage as imageUmlText16
+# from codeallyadvanced.resources.umldiagrammer.Embedded64 import Actor as Actor64
+# from codeallyadvanced.resources.umldiagrammer.Embedded64 import Aggregation as Aggregation64
+#
+# from codeallyadvanced.resources.umldiagrammer.Embedded32 import Actor as Actor32
+# from codeallyadvanced.resources.umldiagrammer.Embedded32 import Aggregation as Aggregation32
 
 from codeallybasic.UnitTestBase import UnitTestBase
 
@@ -51,33 +49,65 @@ class DemoPanel(SizedPanel):
         # noinspection PyUnresolvedReferences
         self.SetSizerProps(expand=True, proportion=1)
 
+        self._layoutExtraLargeIcons()
+        self._layoutLargeIcons()
+        self._layoutMediumIcons()
+        self._layoutSmallIcons()
+
+    def _layoutExtraLargeIcons(self):
+        import codeallyadvanced.resources.umldiagrammer.Embedded64
+
+        extraLargeContainer: SizedStaticBox = SizedStaticBox(self, label='Extra Large Icons')
+        extraLargeContainer.SetSizerType('horizontal')
+        extraLargeContainer.SetSizerProps(expand=True, proportion=1)
+
+        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded64):
+            if not embedded.startswith("__"):
+                print(f'{embedded=}')
+                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded64, embedded)
+                if isinstance(pyEmbeddedImage, PyEmbeddedImage):
+                    bmp = pyEmbeddedImage.GetBitmap()
+                    BitmapButton(parent=extraLargeContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
+
+    def _layoutLargeIcons(self):
+        import codeallyadvanced.resources.umldiagrammer.Embedded32
+
         largeContainer: SizedStaticBox = SizedStaticBox(self, label='Large Icons')
-        smallContainer: SizedStaticBox = SizedStaticBox(self, label='Small Icons')
-
         largeContainer.SetSizerType('horizontal')
-        smallContainer.SetSizerType('horizontal')
-
         largeContainer.SetSizerProps(expand=True, proportion=1)
+        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded32):
+            if not embedded.startswith("__"):
+                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded32, embedded)
+                if isinstance(pyEmbeddedImage, PyEmbeddedImage):
+                    bmp = pyEmbeddedImage.GetBitmap()
+                    BitmapButton(parent=largeContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
+
+    def _layoutMediumIcons(self):
+        import codeallyadvanced.resources.umldiagrammer.Embedded24
+
+        mediumContainer: SizedStaticBox = SizedStaticBox(self, label='Medium Icons')
+        mediumContainer.SetSizerType('horizontal')
+        mediumContainer.SetSizerProps(expand=True, proportion=1)
+        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded24):
+            if not embedded.startswith("__"):
+                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded24, embedded)
+                if isinstance(pyEmbeddedImage, PyEmbeddedImage):
+                    bmp = pyEmbeddedImage.GetBitmap()
+                    BitmapButton(parent=mediumContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
+
+    def _layoutSmallIcons(self):
+        import codeallyadvanced.resources.umldiagrammer.Embedded16
+
+        smallContainer: SizedStaticBox = SizedStaticBox(self, label='Small Icons')
+        smallContainer.SetSizerType('horizontal')
         smallContainer.SetSizerProps(expand=True, proportion=1)
 
-        bitmapLollipop32: Bitmap = imageLollipop32.GetBitmap()
-        bitmapLollipop16: Bitmap = imageLollipop16.GetBitmap()
-
-        bitmapUmlNote32: Bitmap = imageUmlNote32.GetBitmap()
-        bitmapUmlNote16: Bitmap = imageUmlNote16.GetBitmap()
-
-        bitmapUmlText32: Bitmap = imageUmlText32.GetBitmap()
-        bitmapUmlText16: Bitmap = imageUmlText16.GetBitmap()
-
-        BitmapButton(parent=largeContainer, id=wxNewIdRef(), bitmap=bitmapLollipop32, size=DefaultSize)
-        BitmapButton(parent=smallContainer, id=wxNewIdRef(), bitmap=bitmapLollipop16, size=DefaultSize)
-
-        BitmapButton(parent=largeContainer, id=wxNewIdRef(), bitmap=bitmapUmlNote32, size=DefaultSize)
-        BitmapButton(parent=smallContainer, id=wxNewIdRef(), bitmap=bitmapUmlNote16, size=DefaultSize)
-
-        BitmapButton(parent=largeContainer, id=wxNewIdRef(), bitmap=bitmapUmlText32, size=DefaultSize)
-        BitmapButton(parent=smallContainer, id=wxNewIdRef(), bitmap=bitmapUmlText16, size=DefaultSize)
-
+        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded16):
+            if not embedded.startswith("__"):
+                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded16, embedded)
+                if isinstance(pyEmbeddedImage, PyEmbeddedImage):
+                    bmp = pyEmbeddedImage.GetBitmap()
+                    BitmapButton(parent=smallContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
 
 class DemoIcons(App):
 
