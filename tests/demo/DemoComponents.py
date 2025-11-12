@@ -20,8 +20,8 @@ from codeallybasic.UnitTestBase import UnitTestBase
 from tests.demo.DemoComponentsPanel import DemoComponentsPanel
 
 
-FRAME_WIDTH:  int = 575
-FRAME_HEIGHT: int = 300
+FRAME_WIDTH:  int = 400
+FRAME_HEIGHT: int = 650
 
 JSON_LOGGING_CONFIG_FILENAME: str = "testLoggingConfig.json"
 TEST_DIRECTORY:               str = 'tests'
@@ -48,6 +48,8 @@ class DemoComponents(App):
         self._appFrame.CreateStatusBar()  # should always do this when there's a resize border
 
         sizedPanel: SizedPanel = self._appFrame.GetContentsPane()
+        sizedPanel.SetSizerType('horizontal')
+        sizedPanel.SetSizerProps(expand=True, proportion=1)
 
         self._demoComponentsPanel = DemoComponentsPanel(parent=sizedPanel)
         # noinspection PyUnresolvedReferences
