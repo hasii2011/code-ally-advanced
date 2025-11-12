@@ -6,6 +6,7 @@ from logging import getLogger
 
 from dataclasses import dataclass
 
+from wx import BORDER_THEME
 from wx import EVT_TEXT
 from wx import ID_ANY
 
@@ -59,7 +60,7 @@ class DualSpinnerControl(SizedStaticBox):
             are not
         """
 
-        super().__init__(sizedPanel, ID_ANY, boxTitle)
+        super().__init__(sizedPanel, ID_ANY, boxTitle, style=BORDER_THEME)
 
         self.SetSizerType('horizontal')
         # noinspection PyUnresolvedReferences

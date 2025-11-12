@@ -5,6 +5,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import Callable
 
+from wx import BORDER_THEME
 from wx import ID_ANY
 from wx import ID_OK
 from wx import DD_DEFAULT_STYLE
@@ -45,7 +46,7 @@ class DirectorySelector(SizedPanel):
         if self._directorPathChangedCallback is not None:
             kwargs.pop(CALLBACK_PARAMETER)
 
-        super().__init__(*args, **kwargs)
+        super().__init__(style=BORDER_THEME, *args, **kwargs)
 
         self.SetSizerType('horizontal')
         textCtrl: TextCtrl = TextCtrl(self, size=Size(300, -1))
