@@ -6,9 +6,10 @@ from logging import getLogger
 
 from dataclasses import dataclass
 
-from wx import BORDER_THEME
-from wx import EVT_TEXT
+from wx import Size
 from wx import ID_ANY
+from wx import EVT_TEXT
+from wx import BORDER_THEME
 
 from wx import SpinCtrl
 from wx import CommandEvent
@@ -73,8 +74,8 @@ class DualSpinnerControl(SizedStaticBox):
         self._wxSpinner1Id: int = wxNewIdRef()
 
         if setControlsSize is True:
-            self._spinner0: SpinCtrl = SpinCtrl(self, self._wxSpinner0Id, "", size=(SPINNER_WIDTH, SPINNER_HEIGHT))
-            self._spinner1: SpinCtrl = SpinCtrl(self, self._wxSpinner1Id, "", size=(SPINNER_WIDTH, SPINNER_HEIGHT))
+            self._spinner0: SpinCtrl = SpinCtrl(self, self._wxSpinner0Id, "", size=Size(SPINNER_WIDTH, SPINNER_HEIGHT))
+            self._spinner1: SpinCtrl = SpinCtrl(self, self._wxSpinner1Id, "", size=Size(SPINNER_WIDTH, SPINNER_HEIGHT))
         else:
             self._spinner0 = SpinCtrl(self, self._wxSpinner0Id, "")
             self._spinner1 = SpinCtrl(self, self._wxSpinner1Id, "")

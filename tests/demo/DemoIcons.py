@@ -5,27 +5,18 @@ from logging import Logger
 from logging import getLogger
 
 from wx import App
-from wx import Bitmap
 from wx import BitmapButton
 from wx import DEFAULT_FRAME_STYLE
 from wx import DefaultSize
 from wx import FRAME_FLOAT_ON_PARENT
-from wx import GridSizer
-from wx import MiniFrame
 
 from wx import NewIdRef as wxNewIdRef
-from wx import Size
 from wx.lib.embeddedimage import PyEmbeddedImage
 
 from wx.lib.sized_controls import SizedFrame
 from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedStaticBox
 
-# from codeallyadvanced.resources.umldiagrammer.Embedded64 import Actor as Actor64
-# from codeallyadvanced.resources.umldiagrammer.Embedded64 import Aggregation as Aggregation64
-#
-# from codeallyadvanced.resources.umldiagrammer.Embedded32 import Actor as Actor32
-# from codeallyadvanced.resources.umldiagrammer.Embedded32 import Aggregation as Aggregation32
 
 from codeallybasic.UnitTestBase import UnitTestBase
 
