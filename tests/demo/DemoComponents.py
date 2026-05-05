@@ -35,8 +35,8 @@ class DemoComponents(App):
 
         self.logger: Logger = getLogger(__name__)
 
-        self._appFrame:            SizedFrame     = cast(SizedFrame, None)
-        self._demoComponentsPanel: DemoComponents = cast(DemoComponents, None)
+        self._appFrame:            SizedFrame          = cast(SizedFrame, None)
+        self._demoComponentsPanel: DemoComponentsPanel = cast(DemoComponentsPanel, None)
 
         super().__init__(redirect)
 

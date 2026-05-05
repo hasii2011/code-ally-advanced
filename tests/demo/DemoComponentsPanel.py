@@ -78,12 +78,12 @@ class DemoComponentsPanel(SizedPanel):
         verticalPanel.SetSizerProps(expand=True, proportion=1)
 
         panelNoCallback: SizedStaticBox = SizedStaticBox(verticalPanel, label='Directory Selector')
-        panelNoCallback.SetSizerProps(expand=True, proportion=1)  # I want twice as much space as the spinner containers
+        panelNoCallback.SetSizerProps(expand=True, proportion=1)
 
         DirectorySelector(parent=panelNoCallback)
 
         panelWithCallback: SizedStaticBox = SizedStaticBox(verticalPanel, label='Directory Selector w/Callback')
-        panelWithCallback.SetSizerProps(expand=True, proportion=1)  # I want twice as much space as the spinner containers
+        panelWithCallback.SetSizerProps(expand=True, proportion=1)
 
         DirectorySelector(parent=panelWithCallback, pathChangedCallback=self._pathChangedCallback)
 
