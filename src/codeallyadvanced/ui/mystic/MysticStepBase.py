@@ -2,11 +2,12 @@
 from logging import Logger
 from logging import getLogger
 
+from wx import ID_ANY
 from wx import FONTFAMILY_SWISS
 from wx import FONTSTYLE_NORMAL
 from wx import FONTWEIGHT_BOLD
+
 from wx import Font
-from wx import ID_ANY
 from wx import StaticText
 
 from wx.lib.sized_controls import SizedPanel
@@ -16,7 +17,7 @@ from codeallyadvanced.ui.mystic.MysticPanel import MysticPanel
 STANDARD_LABEL_FONT_SIZE: int = 12
 
 
-class MysticPageBase(MysticPanel):
+class MysticStepBase(MysticPanel):
 
     def __init__(self, parent: SizedPanel):
 

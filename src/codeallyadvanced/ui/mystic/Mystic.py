@@ -38,7 +38,7 @@ from codeallyadvanced.resources.mystic.back16 import embeddedImage as backButton
 from codeallyadvanced.resources.mystic.MageBitMap import embeddedImage as mageImage
 
 from codeallyadvanced.ui.mystic.MysticPanel import MysticPanel
-from codeallyadvanced.ui.mystic.MysticPageBase import MysticPageBase
+from codeallyadvanced.ui.mystic.MysticStepBase import MysticStepBase
 
 BUTTON_NEXT_TEXT:   str = 'Next'
 BUTTON_BACK_TEXT:   str = 'Back'
@@ -48,9 +48,14 @@ BUTTON_FINISH_TEXT: str = 'Finish'
 MYSTIC_CANCELLED: int = wxNewIdRef()
 MYSTIC_FINISHED:  int = wxNewIdRef()
 
-MagePages = NewType('MagePages', List[MysticPageBase])
+MysticBaseSteps = NewType('MysticBaseSteps', List[MysticStepBase])
 
-ComputeNextPageCallback = Callable[[], int]
+#
+# The mystic passes the step that is currently transitioning
+# It is up to the callback to determine either the next step
+# or the previous step
+ComputeNextStepCallback = Callable[[MysticStepBase], int]
+ComputeBackStepCallback = Callable[[MysticStepBase], int]
 
 
 class Mystic(SizedDialog):
@@ -63,16 +68,36 @@ class Mystic(SizedDialog):
 
     """
 
-    def __init__(self, parent: Window, title: str, nextCallback: ComputeNextPageCallback | None = None, bitmap: Bitmap | None = None):
+    def __init__(self,
+                 parent: Window,
+                 title: str,
+                 nextCallback: ComputeNextStepCallback | None = None,
+                 backCallback: ComputeBackStepCallback | None = None,
+                 bitmap: Bitmap | None = None
+                 ):
+        """
+
+        Args:
+            parent:         The parent of the mystic
+            title:          The mystic title
+            nextCallback:   If present the mystic calls this method to compute the index
+            of the next step
+            backCallback:   If present the myst calls thsi method to compute the index
+            of the previous step
+            bitmap:     If present the mystic uses this image as the image to present
+            during each mystic step.  If not present the mystic uses a bland image
+            as a place holder
+        """
 
         self.logger: Logger = getLogger(__name__)
 
         super().__init__(parent=parent, title=title, style=CAPTION | STAY_ON_TOP | CLOSE_BOX)
 
-        self._nextPageCallback: ComputeNextPageCallback | None = nextCallback
+        self._nextStepCallback: ComputeNextStepCallback | None = nextCallback
+        self._backStepCallback: ComputeBackStepCallback | None = backCallback
 
-        self._pages:            MagePages = MagePages([])
-        self._pageNumber:       int       = 0
+        self._steps:            MysticBaseSteps = MysticBaseSteps([])
+        self._stepNumber:       int       = 0
         self._wizardSuccessful: bool      = True
 
         # Outer panel holds buttons and side by side panel
@@ -112,24 +137,24 @@ class Mystic(SizedDialog):
         """
         return self._horizontalPanel
 
-    def addMysticPage(self, mysticPage: MysticPanel):
+    def addMysticStep(self, mysticStep: MysticStepBase):
         """
-        Add a page to the mystic;  Add them in the order you want
+        Add a step to the mystic;  Add them in the order you want
         to display them
 
         Args:
-            mysticPage:
+            mysticStep:
         """
-        self._pages.append(mysticPage)
+        self._steps.append(mysticStep)
 
-        mysticPage.Hide()
+        mysticStep.Hide()
         self.Layout()
 
-    def runWizard(self):
+    def runMystic(self):
 
         self._layoutWizardButtons(parent=self.GetContentsPane())
 
-        self._pages[self._pageNumber].Show()
+        self._steps[self._stepNumber].Show()
 
         self.GetContentsPane().Layout()
         self.Fit()
@@ -158,28 +183,28 @@ class Mystic(SizedDialog):
             event:
         """
 
-        oldPage: MysticPageBase = self._pages[self._pageNumber]
+        oldPage: MysticStepBase = self._steps[self._stepNumber]
         if oldPage.validate() is False:
             return                  # Ugh.  short cut out
 
         oldPage.Hide()
-        if self._nextPageCallback is not None:
-            self._pageNumber = self._nextPageCallback()
+        if self._nextStepCallback is not None:
+            self._stepNumber = self._nextStepCallback(oldPage)
         else:
-            self._pageNumber += 1
+            self._stepNumber += 1
 
-        pageCount: int = len(self._pages)
+        pageCount: int = len(self._steps)
 
-        if pageCount - 1 == self._pageNumber:
+        if pageCount - 1 == self._stepNumber:
             self._btnNext.SetLabel(BUTTON_FINISH_TEXT)
-        elif pageCount == self._pageNumber:
+        elif pageCount == self._stepNumber:
             self.EndModal(OK)
             return                  # Ugh.  short cut out
 
         self._btnBack.SetLabel(BUTTON_BACK_TEXT)
         self._btnBack.Enable()
 
-        newPage: MysticPageBase = self._pages[self._pageNumber]
+        newPage: MysticStepBase = self._steps[self._stepNumber]
         newPage.Show()
         self.GetContentsPane().Layout()
         self._resizeMystic()
@@ -187,14 +212,18 @@ class Mystic(SizedDialog):
     # noinspection PyUnusedLocal
     def _onBack(self, event: CommandEvent):
 
-        oldPage: MysticPageBase = self._pages[self._pageNumber]
+        oldPage: MysticStepBase = self._steps[self._stepNumber]
         oldPage.Hide()
 
-        self._pageNumber -= 1
-        if self._pageNumber == 0:
+        if self._backStepCallback is not None:
+            self._stepNumber = self._backStepCallback(oldPage)
+        else:
+            self._stepNumber -= 1
+
+        if self._stepNumber == 0:
             self._btnBack.Disable()
 
-        newPage: MysticPageBase = self._pages[self._pageNumber]
+        newPage: MysticStepBase = self._steps[self._stepNumber]
         newPage.Show()
 
         self.GetContentsPane().Layout()
