@@ -22,7 +22,7 @@ class DemoStep(MysticStepBase):
         Demo Second Step
     """
 
-    def __init__(self, parent: SizedPanel, title: str, demoText: str, stepId: DemoStepId, stepNumber: int):
+    def __init__(self, parent: SizedPanel, title: str, demoText: str, stepId: DemoStepId):
 
         self.logger: Logger = getLogger(__name__)
         super().__init__(parent=parent)
@@ -34,15 +34,10 @@ class DemoStep(MysticStepBase):
         StaticText(parent=self, id=ID_ANY, label=demoText)
 
         self._stepId:     DemoStepId = stepId
-        self._stepNumber: int        = stepNumber
 
     @property
     def stepId(self) -> DemoStepId:
         return self._stepId
-
-    @property
-    def stepNumber(self) -> int:
-        return self._stepNumber
 
     def _createPageTitle(self, title: str):
         """

@@ -57,11 +57,11 @@ class DemoPanel(SizedPanel):
         mystic: Mystic  = Mystic(parent=self, title='', nextCallback=self._getNextStep, backCallback=self._getBackStep)
 
         # Intro page is step/page 0
-        introStep:     DemoStep = DemoStep(parent=mystic.pageContainer, title='Introduction', demoText='Demo Introduction Step', stepId=DemoStepId.NextStep, stepNumber=0)
+        introStep:     DemoStep = DemoStep(parent=mystic.pageContainer, title='Introduction', demoText='Demo Introduction Step', stepId=DemoStepId.NextStep)
         selectionStep: SelectionStep = SelectionStep(parent=mystic.pageContainer)
-        secondStep:    DemoStep = DemoStep(parent=mystic.pageContainer, title='Second Step', demoText='Demo Second Step', stepId=DemoStepId.SecondStep, stepNumber=2)
-        thirdStep:     DemoStep = DemoStep(parent=mystic.pageContainer, title='Third Step', demoText='Demo Third Step',   stepId=DemoStepId.ThirdStep,  stepNumber=3)
-        fourthStep:    DemoStep = DemoStep(parent=mystic.pageContainer, title='Fourth Step', demoText='Demo Fourth Step', stepId=DemoStepId.FourthStep, stepNumber=4)
+        secondStep:    DemoStep = DemoStep(parent=mystic.pageContainer, title='Second Step', demoText='Demo Second Step', stepId=DemoStepId.SecondStep)
+        thirdStep:     DemoStep = DemoStep(parent=mystic.pageContainer, title='Third Step', demoText='Demo Third Step',   stepId=DemoStepId.ThirdStep)
+        fourthStep:    DemoStep = DemoStep(parent=mystic.pageContainer, title='Fourth Step', demoText='Demo Fourth Step', stepId=DemoStepId.FourthStep)
 
         mystic.addMysticStep(mysticStep=introStep)
         mystic.addMysticStep(mysticStep=selectionStep)

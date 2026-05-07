@@ -37,7 +37,6 @@ from codeallyadvanced.resources.mystic.back16 import embeddedImage as backButton
 
 from codeallyadvanced.resources.mystic.MageBitMap import embeddedImage as mageImage
 
-from codeallyadvanced.ui.mystic.MysticPanel import MysticPanel
 from codeallyadvanced.ui.mystic.MysticStepBase import MysticStepBase
 
 BUTTON_NEXT_TEXT:   str = 'Next'
@@ -97,8 +96,10 @@ class Mystic(SizedDialog):
         self._backStepCallback: ComputeBackStepCallback | None = backCallback
 
         self._steps:            MysticBaseSteps = MysticBaseSteps([])
-        self._stepNumber:       int       = 0
+        self._stepNumber:       int       = 0       # Used to control navigation
         self._wizardSuccessful: bool      = True
+
+        self._addedStepNumber: int = 0
 
         # Outer panel holds buttons and side by side panel
         sizedPanel: SizedPanel = self.GetContentsPane()
@@ -145,7 +146,10 @@ class Mystic(SizedDialog):
         Args:
             mysticStep:
         """
+        mysticStep.stepNumber = self._addedStepNumber
         self._steps.append(mysticStep)
+
+        self._addedStepNumber += 1
 
         mysticStep.Hide()
         self.Layout()

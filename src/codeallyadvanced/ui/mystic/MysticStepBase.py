@@ -25,6 +25,16 @@ class MysticStepBase(MysticPanel):
 
         super().__init__(parent=parent)
 
+        self._stepNumber: int = 0
+
+    @property
+    def stepNumber(self) -> int:
+        return self._stepNumber
+
+    @stepNumber.setter
+    def stepNumber(self, stepNumber: int):
+        self._stepNumber = stepNumber
+
     def validate(self) -> bool:
         """
 
