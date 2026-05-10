@@ -12,6 +12,7 @@ from wx import CANCEL
 from wx import ID_ANY
 from wx import CAPTION
 from wx import ID_CANCEL
+from wx import EVT_CLOSE
 from wx import CLOSE_BOX
 from wx import EVT_BUTTON
 from wx import STAY_ON_TOP
@@ -22,6 +23,8 @@ from wx import Bitmap
 from wx import Window
 from wx import CommandEvent
 from wx import StaticBitmap
+from wx import GUIEventLoop
+from wx import EventLoopActivator
 
 from wx import NewIdRef as wxNewIdRef
 
@@ -55,6 +58,8 @@ MysticBaseSteps = NewType('MysticBaseSteps', List[MysticStepBase])
 # or the previous step
 ComputeNextStepCallback = Callable[[MysticStepBase], int]
 ComputeBackStepCallback = Callable[[MysticStepBase], int]
+
+NO_EVENT_LOOP: GUIEventLoop = cast(GUIEventLoop, None)      # noqa
 
 
 class Mystic(SizedDialog):
@@ -128,6 +133,9 @@ class Mystic(SizedDialog):
         )
         self._logo.SetSizerProps(proportion=1, halign='left', valign='center')
 
+        self._eventLoop: GUIEventLoop = NO_EVENT_LOOP
+        self.Bind(EVT_CLOSE, self._onClose)
+
     @property
     def pageContainer(self) -> SizedPanel:
         """
@@ -166,17 +174,34 @@ class Mystic(SizedDialog):
 
         self._btnBack.Disable()
 
-        ans = self.ShowModal()
-        if ans == CANCEL:
+        self.Show()
+        self._eventLoop = GUIEventLoop()
+        with EventLoopActivator(self._eventLoop):
+            self._eventLoop.Run()
+
+        self._eventLoop = NO_EVENT_LOOP
+
+        if self.GetReturnCode() == CANCEL:
             self.logger.info('Cancel pressed')
             return MYSTIC_CANCELLED
         else:
             return MYSTIC_FINISHED
 
     # noinspection PyUnusedLocal
+    def _onClose(self, event: CommandEvent):
+        self._endMystic(CANCEL)
+
+    # noinspection PyUnusedLocal
     def _onCancel(self, event: CommandEvent):
         self._wizardSuccessful = False
-        self.EndModal(CANCEL)
+        self._endMystic(CANCEL)
+
+    def _endMystic(self, returnCode: int):
+
+        self.SetReturnCode(returnCode)
+        if self._eventLoop is not None and self._eventLoop.IsRunning():
+            self._eventLoop.Exit()
+        self.Hide()
 
     # noinspection PyUnusedLocal
     def _onNext(self, event: CommandEvent):
@@ -202,7 +227,7 @@ class Mystic(SizedDialog):
         if pageCount - 1 == self._stepNumber:
             self._btnNext.SetLabel(BUTTON_FINISH_TEXT)
         elif pageCount == self._stepNumber:
-            self.EndModal(OK)
+            self._endMystic(OK)
             return                  # Ugh.  short cut out
 
         self._btnBack.SetLabel(BUTTON_BACK_TEXT)
