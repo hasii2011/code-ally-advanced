@@ -1,106 +1,117 @@
 
 from typing import cast
+from types import ModuleType
 
 from logging import Logger
 from logging import getLogger
 
+from importlib import import_module
+
+
 from wx import App
 from wx import BitmapButton
+
 from wx import DEFAULT_FRAME_STYLE
 from wx import DefaultSize
 from wx import FRAME_FLOAT_ON_PARENT
+from wx import MessageBox
 
 from wx import NewIdRef as wxNewIdRef
+from wx import OK
+
 from wx.lib.embeddedimage import PyEmbeddedImage
 
 from wx.lib.sized_controls import SizedFrame
 from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedStaticBox
 
+from click import command
+from click import option
+from click import version_option
 
 from codeallybasic.UnitTestBase import UnitTestBase
 
-FRAME_WIDTH:  int = 400
-FRAME_HEIGHT: int = 300
+FRAME_WIDTH:  int = 1900
+FRAME_HEIGHT: int = 400
 
 JSON_LOGGING_CONFIG_FILENAME: str = "testLoggingConfig.json"
 TEST_DIRECTORY:               str = 'tests'
 
-RESOURCES_PACKAGE_NAME: str = 'tests.resources'
+EMBEDDED_PACKAGE_PREFIX: str = 'Embedded'
+
+EXTRA_LARGE: str = f'{EMBEDDED_PACKAGE_PREFIX}64'
+LARGE:       str = f'{EMBEDDED_PACKAGE_PREFIX}32'
+MEDIUM:      str = f'{EMBEDDED_PACKAGE_PREFIX}24'
+SMALL:       str = f'{EMBEDDED_PACKAGE_PREFIX}16'
+
+__version__ = "2.0.0"
+
+class NoSuchModuleException(Exception):
+    pass
+
 
 class DemoPanel(SizedPanel):
 
-    TOOLBOX_V_GAP:       int = 2
-    TOOLBOX_H_GAP:       int = 2
+    def __init__(self, parent, imagePackage: str):
+        self.logger: Logger = getLogger(__name__)
 
-    def __init__(self, parent, ):
         super().__init__(parent=parent)
 
         self.SetSizerType('vertical')
         # noinspection PyUnresolvedReferences
         self.SetSizerProps(expand=True, proportion=1)
 
-        self._layoutExtraLargeIcons()
-        self._layoutLargeIcons()
-        self._layoutMediumIcons()
-        self._layoutSmallIcons()
+        self._layoutAllIcons(imagePackage=imagePackage)
 
-    def _layoutExtraLargeIcons(self):
-        import codeallyadvanced.resources.umldiagrammer.Embedded64
+    def _layoutAllIcons(self, imagePackage: str):
 
-        extraLargeContainer: SizedStaticBox = SizedStaticBox(self, label='Extra Large Icons')
-        extraLargeContainer.SetSizerType('horizontal')
-        extraLargeContainer.SetSizerProps(expand=True, proportion=1)
+        for label, suffix in [
+            ("Extra Large Icons", EXTRA_LARGE),
+            ("Large Icons",       LARGE),
+            ("Medium Icons",      MEDIUM),
+            ("Small Icons",       SMALL)
+        ]:
+            container: SizedStaticBox = self._createContainer(label=label)
+            moduleObj: ModuleType     = self._importModule(imagePackage=imagePackage, embeddedPackageName=suffix)
 
-        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded64):
+            self._createButtonIcons(moduleObj=moduleObj, container=container)
+
+    def _createContainer(self, label: str) -> SizedStaticBox:
+
+        container: SizedStaticBox = SizedStaticBox(self, label=label)
+        container.SetSizerType('horizontal')
+
+        container.SetSizerProps(expand=True, proportion=1)
+
+        return container
+
+    def _importModule(self, imagePackage: str, embeddedPackageName: str) -> ModuleType:
+
+        moduleStr: str = f'{imagePackage}.{embeddedPackageName}'
+        try:
+            moduleObj: ModuleType = import_module(moduleStr)
+        except ImportError:
+            self.logger.error(f'Failed to import icon package: {moduleStr}')
+            raise NoSuchModuleException(f'Failed to import icon package: {moduleStr}')
+
+        return moduleObj
+
+    def _createButtonIcons(self, moduleObj: ModuleType, container: SizedStaticBox):
+
+        for embedded in dir(moduleObj):
             if not embedded.startswith("__"):
-                print(f'{embedded=}')
-                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded64, embedded)
+                # self.logger.info(f'{embedded=}')
+                pyEmbeddedImage: PyEmbeddedImage = getattr(moduleObj, embedded)
                 if isinstance(pyEmbeddedImage, PyEmbeddedImage):
                     bmp = pyEmbeddedImage.GetBitmap()
-                    BitmapButton(parent=extraLargeContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
-
-    def _layoutLargeIcons(self):
-        import codeallyadvanced.resources.umldiagrammer.Embedded32
-
-        largeContainer: SizedStaticBox = SizedStaticBox(self, label='Large Icons')
-        largeContainer.SetSizerType('horizontal')
-        largeContainer.SetSizerProps(expand=True, proportion=1)
-        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded32):
-            if not embedded.startswith("__"):
-                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded32, embedded)
-                if isinstance(pyEmbeddedImage, PyEmbeddedImage):
-                    bmp = pyEmbeddedImage.GetBitmap()
-                    BitmapButton(parent=largeContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
-
-    def _layoutMediumIcons(self):
-        import codeallyadvanced.resources.umldiagrammer.Embedded24
-
-        mediumContainer: SizedStaticBox = SizedStaticBox(self, label='Medium Icons')
-        mediumContainer.SetSizerType('horizontal')
-        mediumContainer.SetSizerProps(expand=True, proportion=1)
-        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded24):
-            if not embedded.startswith("__"):
-                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded24, embedded)
-                if isinstance(pyEmbeddedImage, PyEmbeddedImage):
-                    bmp = pyEmbeddedImage.GetBitmap()
-                    BitmapButton(parent=mediumContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
-
-    def _layoutSmallIcons(self):
-        import codeallyadvanced.resources.umldiagrammer.Embedded16
-
-        smallContainer: SizedStaticBox = SizedStaticBox(self, label='Small Icons')
-        smallContainer.SetSizerType('horizontal')
-        smallContainer.SetSizerProps(expand=True, proportion=1)
-
-        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded16):
-            if not embedded.startswith("__"):
-                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded16, embedded)
-                if isinstance(pyEmbeddedImage, PyEmbeddedImage):
-                    bmp = pyEmbeddedImage.GetBitmap()
-                    BitmapButton(parent=smallContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
+                    BitmapButton(parent=container, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
 
 class DemoIcons(App):
+
+    imagePackage: str = ''
+    """
+    Class variable because need to set it before class is instantiated
+    """
 
     def __init__(self):
 
@@ -113,28 +124,42 @@ class DemoIcons(App):
 
     def OnInit(self):
 
-        frameStyle:     int           = DEFAULT_FRAME_STYLE | FRAME_FLOAT_ON_PARENT
+        try:
+            frameStyle: int = DEFAULT_FRAME_STYLE | FRAME_FLOAT_ON_PARENT
 
-        self._appFrame = SizedFrame(parent=None, title="Test Icons", size=(FRAME_WIDTH, FRAME_HEIGHT), style=frameStyle)
-        self._appFrame.CreateStatusBar()  # should always do this when there's a resize border
+            self._appFrame = SizedFrame(parent=None, title=DemoIcons.imagePackage, size=(FRAME_WIDTH, FRAME_HEIGHT), style=frameStyle)
+            self._appFrame.CreateStatusBar()  # should always do this when there's a resize border
 
-        sizedPanel: SizedPanel = self._appFrame.GetContentsPane()
+            sizedPanel: SizedPanel = self._appFrame.GetContentsPane()
 
-        self._demoFrame = DemoPanel(parent=sizedPanel)
-        self._demoFrame.Fit()
-        self._demoFrame.SetMinSize(self._demoFrame.GetSize())
+            self._demoFrame = DemoPanel(parent=sizedPanel, imagePackage=DemoIcons.imagePackage)
+            self._demoFrame.Fit()
+            self._demoFrame.SetMinSize(self._demoFrame.GetSize())
 
-        self.SetTopWindow(self._appFrame)
+            self.SetTopWindow(self._appFrame)
 
-        self._appFrame.Show(True)
+            self._appFrame.Show(True)
+
+        except NoSuchModuleException as e:
+            answer = MessageBox(f'{e}', "Error", OK)
+            if answer == OK:
+                pass
 
         return True
 
-
-if __name__ == "__main__":
+@command()
+@version_option(version=f'{__version__}', message='%(version)s')
+@option('-p', '--image-package', required=True, help='The base image package.')
+def commandHandler(image_package: str):
 
     UnitTestBase.setUpLogging()
 
-    testApp: DemoIcons = DemoIcons()
+    print(f'{image_package=}')
+    DemoIcons.imagePackage = image_package      # Set the class variable before instantiation
 
+    testApp: DemoIcons = DemoIcons()
     testApp.MainLoop()
+
+
+if __name__ == "__main__":
+    commandHandler()
