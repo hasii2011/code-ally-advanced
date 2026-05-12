@@ -46,56 +46,56 @@ class DemoPanel(SizedPanel):
         self._layoutSmallIcons()
 
     def _layoutExtraLargeIcons(self):
-        import codeallyadvanced.resources.umldiagrammer.Embedded64
+        import codeallyadvanced.resources.neoindustrialminimalist.Embedded64
 
         extraLargeContainer: SizedStaticBox = SizedStaticBox(self, label='Extra Large Icons')
         extraLargeContainer.SetSizerType('horizontal')
         extraLargeContainer.SetSizerProps(expand=True, proportion=1)
 
-        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded64):
+        for embedded in dir(codeallyadvanced.resources.neoindustrialminimalist.Embedded64):
             if not embedded.startswith("__"):
                 print(f'{embedded=}')
-                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded64, embedded)
+                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.neoindustrialminimalist.Embedded64, embedded)
                 if isinstance(pyEmbeddedImage, PyEmbeddedImage):
                     bmp = pyEmbeddedImage.GetBitmap()
                     BitmapButton(parent=extraLargeContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
 
     def _layoutLargeIcons(self):
-        import codeallyadvanced.resources.umldiagrammer.Embedded32
+        import codeallyadvanced.resources.neoindustrialminimalist.Embedded32
 
         largeContainer: SizedStaticBox = SizedStaticBox(self, label='Large Icons')
         largeContainer.SetSizerType('horizontal')
         largeContainer.SetSizerProps(expand=True, proportion=1)
-        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded32):
+        for embedded in dir(codeallyadvanced.resources.neoindustrialminimalist.Embedded32):
             if not embedded.startswith("__"):
-                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded32, embedded)
+                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.neoindustrialminimalist.Embedded32, embedded)
                 if isinstance(pyEmbeddedImage, PyEmbeddedImage):
                     bmp = pyEmbeddedImage.GetBitmap()
                     BitmapButton(parent=largeContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
 
     def _layoutMediumIcons(self):
-        import codeallyadvanced.resources.umldiagrammer.Embedded24
+        import codeallyadvanced.resources.neoindustrialminimalist.Embedded24
 
         mediumContainer: SizedStaticBox = SizedStaticBox(self, label='Medium Icons')
         mediumContainer.SetSizerType('horizontal')
         mediumContainer.SetSizerProps(expand=True, proportion=1)
-        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded24):
+        for embedded in dir(codeallyadvanced.resources.neoindustrialminimalist.Embedded24):
             if not embedded.startswith("__"):
-                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded24, embedded)
+                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.neoindustrialminimalist.Embedded24, embedded)
                 if isinstance(pyEmbeddedImage, PyEmbeddedImage):
                     bmp = pyEmbeddedImage.GetBitmap()
                     BitmapButton(parent=mediumContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
 
     def _layoutSmallIcons(self):
-        import codeallyadvanced.resources.umldiagrammer.Embedded16
+        import codeallyadvanced.resources.neoindustrialminimalist.Embedded16
 
         smallContainer: SizedStaticBox = SizedStaticBox(self, label='Small Icons')
         smallContainer.SetSizerType('horizontal')
         smallContainer.SetSizerProps(expand=True, proportion=1)
 
-        for embedded in dir(codeallyadvanced.resources.umldiagrammer.Embedded16):
+        for embedded in dir(codeallyadvanced.resources.neoindustrialminimalist.Embedded16):
             if not embedded.startswith("__"):
-                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.umldiagrammer.Embedded16, embedded)
+                pyEmbeddedImage: PyEmbeddedImage = getattr(codeallyadvanced.resources.neoindustrialminimalist.Embedded16, embedded)
                 if isinstance(pyEmbeddedImage, PyEmbeddedImage):
                     bmp = pyEmbeddedImage.GetBitmap()
                     BitmapButton(parent=smallContainer, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
