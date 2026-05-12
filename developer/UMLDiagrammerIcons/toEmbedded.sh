@@ -1,6 +1,7 @@
 #!/opt/homebrew/bin/bash
 
-# Note the above requires that brew be installed for OS
+# Note the above requires that brew be installed for OSX
+# Assumes the XX_ICONS directory were created by the resize.sh script
 #
 
 export EXTRA_LARGE_ICONS='64x64'
