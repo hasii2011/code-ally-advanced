@@ -104,7 +104,9 @@ class DemoPanel(SizedPanel):
                 pyEmbeddedImage: PyEmbeddedImage = getattr(moduleObj, embedded)
                 if isinstance(pyEmbeddedImage, PyEmbeddedImage):
                     bmp = pyEmbeddedImage.GetBitmap()
-                    BitmapButton(parent=container, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
+                    button: BitmapButton = BitmapButton(parent=container, id=wxNewIdRef(), bitmap=bmp, size=DefaultSize)
+                    button.SetToolTip(embedded)
+
 
 class DemoIcons(App):
 
