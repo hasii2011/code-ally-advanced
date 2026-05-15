@@ -127,7 +127,7 @@ class DemoIcons(App):
         try:
             frameStyle: int = DEFAULT_FRAME_STYLE | FRAME_FLOAT_ON_PARENT
 
-            self._appFrame = SizedFrame(parent=None, title="Test Icons", size=(FRAME_WIDTH, FRAME_HEIGHT), style=frameStyle)
+            self._appFrame = SizedFrame(parent=None, title=DemoIcons.imagePackage, size=(FRAME_WIDTH, FRAME_HEIGHT), style=frameStyle)
             self._appFrame.CreateStatusBar()  # should always do this when there's a resize border
 
             sizedPanel: SizedPanel = self._appFrame.GetContentsPane()
