@@ -7,3 +7,7 @@ The .png files were sized 2134x2134,   Not sure what happened but good for me.  
 
 
 Next I took the icons and asked gemini to create various OS X look and feel icons.  I asked it to create high resolution 1024x1024 images
+
+
+
+Lollipop and DefaultPreferences need to be generated for this style
