@@ -46,20 +46,5 @@ pip install .[test]
 pip install .[deploy]
 ```
 
-Normally, not needed because the project uses a GitHub workflow that automatically deploys releases
-
 ---
-
-![](https://github.com/hasii2011/code-ally-basic/blob/master/developer/SillyGitHub.png)
-
-== I am using GitHub under protest ==
-
-This project is currently hosted on GitHub.  
-
-I urge you to read about the [Give up GitHub](https://GiveUpGitHub.org) campaign from [the Software Freedom Conservancy](https://sfconservancy.org).
-
-While I do not advocate for all the issues listed there, I do not like that  a company like Microsoft may profit from open source projects.
-
-I continue to use GitHub because it offers the services I need for free.  I continue to monitor their terms of service.
-
-Any use of this project's code by GitHub Copilot, past or present, is done  without our permission.  We do not consent to GitHub's use of this project's  code in Copilot.
+[Copilot Statement](https://github.com/hasii2011/code-ally-basic/wiki/GitHub-Copilot).
