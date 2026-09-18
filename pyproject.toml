@@ -11,7 +11,7 @@ authors     = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@
 maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
 keywords    = ['pyut', 'python', 'wxPython', 'UI', 'umldiagrammer']
 license     = 'AGPL-1.0-or-later'
-
+license-files = ['LICENSE']
 classifiers = [
   "Programming Language :: Python",
   "Intended Audience :: Developers",

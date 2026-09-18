@@ -1,12 +1,15 @@
 
-from typing import Any
-from typing import Callable
-from typing import cast
+from logging import Logger
+from logging import getLogger
 
-from math import atan2
+from typing import Any
+from typing import cast
+from typing import Callable
+
 from math import cos
 from math import pi
 from math import sin
+from math import atan2
 
 from wx import AutoBufferedPaintDC
 from wx import Brush
@@ -71,6 +74,107 @@ DialChangeCallback = Callable[[float], Any]
 
 NO_DIAL_CALLBACK: DialChangeCallback = cast(DialChangeCallback, None)
 
+START_ANGLE_RADIANS:   float  = 0.75 * pi
+SWEEP_ANGLE_RADIANS:   float  = 1.5 * pi
+FULL_CIRCLE_RADIANS:   float  = 2.0 * pi
+"""
+Full circle angular period in radians (360 degrees, or 2 * pi).
+"""
+FALLBACK_ACCENT_COLOR: Colour = Colour(0, 122, 255)
+
+EPSILON_RANGE_SPAN: float = 0.00001
+"""
+Minimum non-zero range span required to compute a value fraction without division-by-zero.
+"""
+
+EPSILON_STEP: float = 0.00001
+"""
+Minimum non-zero step increment required to snap values and prevent division-by-zero.
+"""
+
+DEFAULT_VALUE_FRACTION: float = 0.0
+"""
+Baseline fraction returned when the dial range is degenerate or flat.
+"""
+
+MIN_SWEEP_RENDER_FRACTION: float = 0.001
+"""
+Minimum progress fraction required to stroke the active sweep arc,
+preventing rounded pen caps (CAP_ROUND) from bleeding onto the neutral track at zero.
+"""
+
+MIN_INNER_FACE_RADIUS: float = 8.0
+"""
+Minimum radius in pixels required to render the interior face disc.
+Prevents cramped visual clutter and non-positive circle geometry on small dials.
+"""
+
+MIN_THUMB_RADIUS: float = 3.0
+"""
+Minimum radius in pixels for the rotary thumb pip.
+"""
+
+THUMB_TRACK_RATIO: float = 0.45
+"""
+Ratio of thumb radius to track stroke width.
+"""
+
+THUMB_SHADOW_OFFSET_Y: float = 1.0
+"""
+Vertical pixel offset for the thumb drop shadow.
+"""
+
+THUMB_SHADOW_SPREAD: float = 0.5
+"""
+Radial pixel expansion for the thumb drop shadow.
+"""
+
+THUMB_SHADOW_COLOR: Colour = Colour(0, 0, 0, 40)
+"""
+Translucent shadow color (alpha 40) for the thumb drop shadow.
+"""
+
+TRANSPARENT_COLOR: Colour = Colour(0, 0, 0, 0)
+"""
+Fully transparent color (alpha 0) for borderless pens and hollow fill brushes.
+"""
+
+FOCUS_RING_OFFSET: float = 3.0
+"""
+Radial pixel expansion beyond outerRadius for the accessibility focus ring.
+"""
+
+FOCUS_RING_ALPHA: int = 140
+"""
+Alpha opacity (0-255, ~55%) applied to the accent color for the focus ring outline.
+"""
+
+FOCUS_RING_PEN_WIDTH: int = 2
+"""
+Stroke width in pixels for the accessibility focus ring pen.
+"""
+
+
+DEFAULT_FACE_COLOR: Colour = Colour(250, 250, 252)
+"""
+Default background color for the inner circular face of the dial.
+"""
+
+DEFAULT_TRACK_COLOR: Colour = Colour(224, 224, 228)
+"""
+Default background track color for the inactive sweep arc of the dial.
+"""
+
+DEFAULT_THUMB_COLOR: Colour = Colour(255, 255, 255)
+"""
+Default color for the draggable knob/thumb indicator.
+"""
+
+DEFAULT_FACE_BORDER_COLOR: Colour = Colour(210, 210, 216)
+"""
+Default border stroke color for the inner face of the dial.
+"""
+
 
 class DialEvent(PyCommandEvent):
     """
@@ -120,9 +224,6 @@ class DialControl(Control):
         * Keyboard Navigation:    Arrow keys, PageUp/PageDown, and Home/End.
     """
 
-    START_ANGLE_RAD: float = 0.75 * pi
-    SWEEP_ANGLE_RAD: float = 1.5 * pi
-
     def __init__(self,
                  parent:       SizedPanel | SizedStaticBox,
                  winId:        int = ID_ANY,
@@ -148,6 +249,8 @@ class DialControl(Control):
         style: int = TAB_TRAVERSAL | WANTS_CHARS
         super().__init__(parent, winId, size=size, style=style)
 
+        self.logger: Logger = getLogger(__name__)
+
         self._minValue: float = float(minValue)
         self._maxValue: float = float(maxValue)
         self._step:     float = float(step)
@@ -157,10 +260,10 @@ class DialControl(Control):
         self._isDragging: bool = False
         self._isHovered: bool = False
 
-        self._faceColor:       Colour = Colour(250, 250, 252)
-        self._trackColor:      Colour = Colour(224, 224, 228)
-        self._thumbColor:      Colour = Colour(255, 255, 255)
-        self._faceBorderColor: Colour = Colour(210, 210, 216)
+        self._faceColor:       Colour = DEFAULT_FACE_COLOR
+        self._trackColor:      Colour = DEFAULT_TRACK_COLOR
+        self._thumbColor:      Colour = DEFAULT_THUMB_COLOR
+        self._faceBorderColor: Colour = DEFAULT_FACE_BORDER_COLOR
 
         self.SetInitialSize(size)
         self.SetBackgroundStyle(cast(Any, 2))
@@ -285,79 +388,203 @@ class DialControl(Control):
         return True
 
     def _onPaint(self, _event: PaintEvent):
-        paintDc: AutoBufferedPaintDC = AutoBufferedPaintDC(self)
-        graphicsContext: GraphicsContext = GraphicsContext.Create(paintDc)
+        """
+        Coordinate the vector drawing of the dial control components.
+
+        Args:
+            _event: Paint event triggered by wxPython.
+        """
+        paintDc:         AutoBufferedPaintDC = AutoBufferedPaintDC(self)
+        graphicsContext: GraphicsContext     = GraphicsContext.Create(paintDc)
         if not graphicsContext:
+            self.logger.error('DialControl: Failed to create GraphicsContext from AutoBufferedPaintDC')
             return
 
         clientSize: Size = self.GetClientSize()
-        width: int = clientSize.GetWidth()
-        height: int = clientSize.GetHeight()
+        width:      int  = clientSize.GetWidth()
+        height:     int  = clientSize.GetHeight()
 
         centerX: float = float(width) / 2.0
         centerY: float = float(height) / 2.0
         outerRadius: float = max(10.0, min(centerX, centerY) - 8.0)
-        trackWidth: float = max(4.0, outerRadius * 0.16)
-        trackRadius: float = outerRadius - (trackWidth / 2.0)
+        trackWidth:  float = max(4.0, outerRadius * 0.16)
+
+        trackRadius:     float = outerRadius - (trackWidth / 2.0)
         innerFaceRadius: float = trackRadius - (trackWidth / 2.0) - 2.0
 
+        accentColor:   Colour = self._getAccentColor()
+        valueFraction: float  = self._getValueFraction()
+
+        self._drawTrack(graphicsContext, centerX, centerY, trackRadius, trackWidth)
+        self._drawActiveSweep(graphicsContext, centerX, centerY, trackRadius, trackWidth, valueFraction, accentColor)
+        self._drawFace(graphicsContext, centerX, centerY, innerFaceRadius)
+        self._drawThumb(graphicsContext, centerX, centerY, trackRadius, trackWidth, valueFraction)
+
+        if self.HasFocus():
+            self._drawFocusRing(graphicsContext, centerX, centerY, outerRadius, accentColor)
+
+    def _getAccentColor(self) -> Colour:
+        """
+        Retrieve system accent color or default fallback.
+
+        Returns:
+            The system highlight Colour or macOS default blue.
+        """
         accentColor: Colour = SystemSettings.GetColour(SYS_COLOUR_HIGHLIGHT)
         if not accentColor.IsOk():
-            accentColor = Colour(0, 122, 255)
+            accentColor = FALLBACK_ACCENT_COLOR
+        return accentColor
 
+    def _getValueFraction(self) -> float:
+        """
+        Calculate the normalized 0.0 to 1.0 progress fraction of the current value.
+
+        Returns:
+            Normalized float between 0.0 (minValue) and 1.0 (maxValue).
+        """
+        rangeSpan: float = self._maxValue - self._minValue
+        if rangeSpan <= EPSILON_RANGE_SPAN:
+            return DEFAULT_VALUE_FRACTION
+        return (self._value - self._minValue) / rangeSpan
+
+    def _drawTrack(
+        self,
+        graphicsContext: GraphicsContext,
+        centerX: float,
+        centerY: float,
+        trackRadius: float,
+        trackWidth: float
+    ):
+        """
+        Render the circular background track arc.
+
+        Args:
+            graphicsContext: Active graphics context.
+            centerX: Dial center X coordinate.
+            centerY: Dial center Y coordinate.
+            trackRadius: Radius of the track arc.
+            trackWidth: Stroke width of the track.
+        """
         trackWxPen: Pen = Pen(self._trackColor, int(trackWidth))
         trackWxPen.SetCap(CAP_ROUND)
         trackPen: GraphicsPen = graphicsContext.CreatePen(trackWxPen)
-
-        activeWxPen: Pen = Pen(accentColor, int(trackWidth))
-        activeWxPen.SetCap(CAP_ROUND)
-        activePen: GraphicsPen = graphicsContext.CreatePen(activeWxPen)
 
         trackPath: GraphicsPath = graphicsContext.CreatePath()
         trackPath.AddArc(
             centerX,
             centerY,
             trackRadius,
-            self.START_ANGLE_RAD,
-            self.START_ANGLE_RAD + self.SWEEP_ANGLE_RAD,
+            START_ANGLE_RADIANS,
+            START_ANGLE_RADIANS + SWEEP_ANGLE_RADIANS,
             True
         )
         graphicsContext.SetPen(trackPen)
         graphicsContext.StrokePath(trackPath)
 
-        valueFraction: float = self._getValueFraction()
-        if valueFraction > 0.001:
-            activeSweepRad: float = valueFraction * self.SWEEP_ANGLE_RAD
-            activePath: GraphicsPath = graphicsContext.CreatePath()
-            activePath.AddArc(
-                centerX,
-                centerY,
-                trackRadius,
-                self.START_ANGLE_RAD,
-                self.START_ANGLE_RAD + activeSweepRad,
-                True
-            )
-            graphicsContext.SetPen(activePen)
-            graphicsContext.StrokePath(activePath)
+    def _drawActiveSweep(
+        self,
+        graphicsContext: GraphicsContext,
+        centerX: float,
+        centerY: float,
+        trackRadius: float,
+        trackWidth: float,
+        valueFraction: float,
+        accentColor: Colour
+    ):
+        """
+        Render the active highlight sweep arc proportional to current value.
 
-        if innerFaceRadius > 8.0:
-            facePath: GraphicsPath = graphicsContext.CreatePath()
-            facePath.AddCircle(centerX, centerY, innerFaceRadius)
-            faceBrush: GraphicsBrush = graphicsContext.CreateBrush(Brush(self._faceColor))
-            faceBorderPen: GraphicsPen = graphicsContext.CreatePen(Pen(self._faceBorderColor, 1))
-            graphicsContext.SetBrush(faceBrush)
-            graphicsContext.SetPen(faceBorderPen)
-            graphicsContext.DrawPath(facePath)
+        Args:
+            graphicsContext: Active graphics context.
+            centerX: Dial center X coordinate.
+            centerY: Dial center Y coordinate.
+            trackRadius: Radius of the track arc.
+            trackWidth: Stroke width of the track.
+            valueFraction: Value normalized to range [0.0, 1.0].
+            accentColor: Highlight color for the sweep.
+        """
+        if valueFraction <= MIN_SWEEP_RENDER_FRACTION:
+            return
 
-        currentAngleRad: float = self.START_ANGLE_RAD + (valueFraction * self.SWEEP_ANGLE_RAD)
-        thumbRadius: float = max(3.0, trackWidth * 0.45)
-        thumbCenterX: float = centerX + (trackRadius * cos(currentAngleRad))
-        thumbCenterY: float = centerY + (trackRadius * sin(currentAngleRad))
+        activeWxPen: Pen = Pen(accentColor, int(trackWidth))
+        activeWxPen.SetCap(CAP_ROUND)
+        activePen: GraphicsPen = graphicsContext.CreatePen(activeWxPen)
+
+        activeSweepRadians: float = valueFraction * SWEEP_ANGLE_RADIANS
+        activePath: GraphicsPath = graphicsContext.CreatePath()
+        activePath.AddArc(
+            centerX,
+            centerY,
+            trackRadius,
+            START_ANGLE_RADIANS,
+            START_ANGLE_RADIANS + activeSweepRadians,
+            True
+        )
+        graphicsContext.SetPen(activePen)
+        graphicsContext.StrokePath(activePath)
+
+    def _drawFace(
+        self,
+        graphicsContext: GraphicsContext,
+        centerX: float,
+        centerY: float,
+        innerFaceRadius: float
+    ):
+        """
+        Render the interior face disc and its border.
+
+        Args:
+            graphicsContext: Active graphics context.
+            centerX: Dial center X coordinate.
+            centerY: Dial center Y coordinate.
+            innerFaceRadius: Radius of the inner disc.
+        """
+        if innerFaceRadius <= MIN_INNER_FACE_RADIUS:
+            return
+
+        facePath: GraphicsPath = graphicsContext.CreatePath()
+        facePath.AddCircle(centerX, centerY, innerFaceRadius)
+
+        faceBrush: GraphicsBrush = graphicsContext.CreateBrush(Brush(self._faceColor))
+        faceBorderPen: GraphicsPen = graphicsContext.CreatePen(Pen(self._faceBorderColor, 1))
+
+        graphicsContext.SetBrush(faceBrush)
+        graphicsContext.SetPen(faceBorderPen)
+        graphicsContext.DrawPath(facePath)
+
+    def _drawThumb(
+        self,
+        graphicsContext: GraphicsContext,
+        centerX:       float,
+        centerY:       float,
+        trackRadius:   float,
+        trackWidth:    float,
+        valueFraction: float
+    ):
+        """
+        Render the indicator thumb handle and soft drop shadow.
+
+        Args:
+            graphicsContext: Active graphics context.
+            centerX: Dial center X coordinate.
+            centerY: Dial center Y coordinate.
+            trackRadius: Radius of the track arc.
+            trackWidth: Stroke width of the track.
+            valueFraction: Value normalized to range [0.0, 1.0].
+        """
+        currentAngleRadians: float = START_ANGLE_RADIANS + (valueFraction * SWEEP_ANGLE_RADIANS)
+        thumbRadius:  float = max(MIN_THUMB_RADIUS, trackWidth * THUMB_TRACK_RATIO)
+        thumbCenterX: float = centerX + (trackRadius * cos(currentAngleRadians))
+        thumbCenterY: float = centerY + (trackRadius * sin(currentAngleRadians))
 
         thumbShadowPath: GraphicsPath = graphicsContext.CreatePath()
-        thumbShadowPath.AddCircle(thumbCenterX, thumbCenterY + 1.0, thumbRadius + 0.5)
-        shadowBrush: GraphicsBrush = graphicsContext.CreateBrush(Brush(Colour(0, 0, 0, 40)))
-        transparentPen: GraphicsPen = graphicsContext.CreatePen(Pen(Colour(0, 0, 0, 0), 0))
+        thumbShadowPath.AddCircle(
+            thumbCenterX,
+            thumbCenterY + THUMB_SHADOW_OFFSET_Y,
+            thumbRadius + THUMB_SHADOW_SPREAD
+        )
+        shadowBrush:    GraphicsBrush = graphicsContext.CreateBrush(Brush(THUMB_SHADOW_COLOR))
+        transparentPen: GraphicsPen   = graphicsContext.CreatePen(Pen(TRANSPARENT_COLOR, 0))
         graphicsContext.SetBrush(shadowBrush)
         graphicsContext.SetPen(transparentPen)
         graphicsContext.DrawPath(thumbShadowPath)
@@ -370,15 +597,40 @@ class DialControl(Control):
         graphicsContext.SetPen(thumbBorderPen)
         graphicsContext.DrawPath(thumbPath)
 
-        if self.HasFocus():
-            focusPath: GraphicsPath = graphicsContext.CreatePath()
-            focusPath.AddCircle(centerX, centerY, outerRadius + 3.0)
-            focusColor: Colour = Colour(accentColor.Red(), accentColor.Green(), accentColor.Blue(), 140)
-            focusPen: GraphicsPen = graphicsContext.CreatePen(Pen(focusColor, 2))
-            clearBrush: GraphicsBrush = graphicsContext.CreateBrush(Brush(Colour(0, 0, 0, 0)))
-            graphicsContext.SetPen(focusPen)
-            graphicsContext.SetBrush(clearBrush)
-            graphicsContext.StrokePath(focusPath)
+    def _drawFocusRing(
+        self,
+        graphicsContext: GraphicsContext,
+        centerX:     float,
+        centerY:     float,
+        outerRadius: float,
+        accentColor: Colour
+    ):
+        """
+        Render accessibility focus ring around the dial when focused.
+
+        Args:
+            graphicsContext: Active graphics context.
+            centerX: Dial center X coordinate.
+            centerY: Dial center Y coordinate.
+            outerRadius: Outer boundary radius.
+            accentColor: Base color for the focus outline.
+        """
+        focusPath: GraphicsPath = graphicsContext.CreatePath()
+        focusPath.AddCircle(centerX, centerY, outerRadius + FOCUS_RING_OFFSET)
+
+        focusColor: Colour = Colour(
+            accentColor.Red(),
+            accentColor.Green(),
+            accentColor.Blue(),
+            FOCUS_RING_ALPHA
+        )
+
+        focusPen: GraphicsPen = graphicsContext.CreatePen(Pen(focusColor, FOCUS_RING_PEN_WIDTH))
+        clearBrush: GraphicsBrush = graphicsContext.CreateBrush(Brush(TRANSPARENT_COLOR))
+
+        graphicsContext.SetPen(focusPen)
+        graphicsContext.SetBrush(clearBrush)
+        graphicsContext.StrokePath(focusPath)
 
     def _onSize(self, event: SizeEvent):
         self.Refresh()
@@ -451,19 +703,19 @@ class DialControl(Control):
         deltaX: float = float(mousePos.x) - centerX
         deltaY: float = float(mousePos.y) - centerY
 
-        mouseAngleRad: float = atan2(deltaY, deltaX)
-        if mouseAngleRad < 0:
-            mouseAngleRad += 2.0 * pi
+        mouseAngleRadians: float = atan2(deltaY, deltaX)
+        if mouseAngleRadians < 0:
+            mouseAngleRadians += FULL_CIRCLE_RADIANS
 
-        normalizedAngleRad: float = mouseAngleRad - self.START_ANGLE_RAD
-        if normalizedAngleRad < 0:
-            normalizedAngleRad += 2.0 * pi
+        normalizedAngleRadians: float = mouseAngleRadians - START_ANGLE_RADIANS
+        if normalizedAngleRadians < 0:
+            normalizedAngleRadians += FULL_CIRCLE_RADIANS
 
-        if normalizedAngleRad <= self.SWEEP_ANGLE_RAD:
-            fraction: float = normalizedAngleRad / self.SWEEP_ANGLE_RAD
+        if normalizedAngleRadians <= SWEEP_ANGLE_RADIANS:
+            fraction: float = normalizedAngleRadians / SWEEP_ANGLE_RADIANS
         else:
-            gapDistanceMin: float = (2.0 * pi) - normalizedAngleRad
-            gapDistanceMax: float = normalizedAngleRad - self.SWEEP_ANGLE_RAD
+            gapDistanceMin: float = FULL_CIRCLE_RADIANS - normalizedAngleRadians
+            gapDistanceMax: float = normalizedAngleRadians - SWEEP_ANGLE_RADIANS
             fraction = 0.0 if gapDistanceMin < gapDistanceMax else 1.0
 
         targetValue: float = self._minValue + (fraction * (self._maxValue - self._minValue))
@@ -501,20 +753,10 @@ class DialControl(Control):
             Clamped and step-aligned floating-point value.
         """
         clamped: float = max(self._minValue, min(self._maxValue, valueToClamp))
-        if self._step > 0.00001:
+
+        if self._step > EPSILON_STEP:
             stepCount: float = round((clamped - self._minValue) / self._step)
             snapped: float = self._minValue + (stepCount * self._step)
             return max(self._minValue, min(self._maxValue, snapped))
+
         return clamped
-
-    def _getValueFraction(self) -> float:
-        """
-        Calculate the normalized 0.0 to 1.0 progress fraction of the current value.
-
-        Returns:
-            Normalized float between 0.0 (minValue) and 1.0 (maxValue).
-        """
-        rangeSpan: float = self._maxValue - self._minValue
-        if rangeSpan <= 0.00001:
-            return 0.0
-        return (self._value - self._minValue) / rangeSpan
