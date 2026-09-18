@@ -1,29 +1,87 @@
-from typing import Any
-from typing import Callable
-from typing import cast
 
-from dataclasses import dataclass
+from typing import Callable
 
 from logging import Logger
 from logging import getLogger
 
-from wx import ALIGN_CENTER_HORIZONTAL
+from dataclasses import dataclass
+from dataclasses import field
+
 from wx import ID_ANY
+from wx import ALIGN_CENTER_HORIZONTAL
+
 from wx import Size
 from wx import StaticText
 
 from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedStaticBox
 
-from codeallyadvanced.ui.widgets.DialControl import DialControl
-from codeallyadvanced.ui.widgets.DialControl import DialEvent
 from codeallyadvanced.ui.widgets.DialControl import EVT_DIAL_CHANGED
 
-FormatValueCallback = Callable[[float], str]
+from codeallyadvanced.ui.widgets.DialControl import DialEvent
+from codeallyadvanced.ui.widgets.DialControl import DialControl
+
+FormatValueCallback = Callable[[float], str] | None
 ValueChangeCallback = Callable[[float], None]
 
-NO_FORMAT_CALLBACK: FormatValueCallback = cast(FormatValueCallback, None)
-NO_VALUE_CALLBACK: ValueChangeCallback = cast(ValueChangeCallback, None)
+NO_FORMAT_CALLBACK: FormatValueCallback = None
+
+DEFAULT_MIN_VALUE: float = 0.0
+"""
+Default minimum selectable value for the dial domain range.
+"""
+
+DEFAULT_MAX_VALUE: float = 100.0
+"""
+Default maximum selectable value for the dial domain range.
+"""
+
+DEFAULT_INITIAL_VALUE: float = 0.0
+"""
+Default initial starting value for the dial.
+"""
+
+DEFAULT_STEP: float = 1.0
+"""
+Default increment step value applied when turning or stepping the dial.
+"""
+
+DEFAULT_DIAL_LABEL: str = ''
+"""
+Default text title displayed on the group box border.
+"""
+
+DEFAULT_DIAL_WIDTH: int = 100
+"""
+Default preferred pixel width of the embedded rotary dial.
+"""
+
+DEFAULT_DIAL_HEIGHT: int = 100
+"""
+Default preferred pixel height of the embedded rotary dial.
+"""
+
+DEFAULT_DIAL_SIZE: Size = Size(DEFAULT_DIAL_WIDTH, DEFAULT_DIAL_HEIGHT)
+"""
+Default preferred pixel dimensions of the embedded rotary dial.
+"""
+
+
+@dataclass
+class ValueRange:
+    """
+    Mathematical domain bounds and step resolution for numeric controls.
+
+    Attributes:
+        minValue:     Minimum selectable value in the domain range. Defaults to DEFAULT_MIN_VALUE (0.0).
+        maxValue:     Maximum selectable value in the domain range. Defaults to DEFAULT_MAX_VALUE (100.0).
+        initialValue: Starting value set when the widget initializes. Defaults to DEFAULT_INITIAL_VALUE (0.0).
+        step:         Increment step value applied when turning or stepping. Defaults to DEFAULT_STEP (1.0).
+    """
+    minValue:     float = DEFAULT_MIN_VALUE
+    maxValue:     float = DEFAULT_MAX_VALUE
+    initialValue: float = DEFAULT_INITIAL_VALUE
+    step:         float = DEFAULT_STEP
 
 
 @dataclass
@@ -32,25 +90,17 @@ class MacDialSelectorParameters:
     Configuration parameters for constructing a MacDialSelector component.
 
     Attributes:
-        minValue: Minimum selectable value in the domain range.
-        maxValue: Maximum selectable value in the domain range.
-        initialValue: Starting value set when the widget initializes.
-        step: Increment step value applied when turning or stepping.
-        dialLabel: Text title displayed on the group box border.
-        dialWidth: Preferred pixel width of the embedded DialControl.
-        dialHeight: Preferred pixel height of the embedded DialControl.
-        formatValueCallback: Formatter mapping numeric value to display string.
-        valueChangedCallback: Listener invoked when the reported value changes.
+        valueChangedCallback: Mandatory listener invoked when the reported value changes.
+        valueRange:           Mathematical domain bounds and step resolution. Defaults to ValueRange().
+        dialLabel:            Text title displayed on the group box border. Defaults to DEFAULT_DIAL_LABEL ('').
+        dialSize:             Preferred pixel dimensions of the embedded rotary dial. Defaults to DEFAULT_DIAL_SIZE (Size(100, 100)).
+        formatValueCallback:  Optional formatter mapping numeric value to display string. Defaults to NO_FORMAT_CALLBACK (None).
     """
-    minValue: float = 0.0
-    maxValue: float = 100.0
-    initialValue: float = 0.0
-    step: float = 1.0
-    dialLabel: str = ''
-    dialWidth: int = 100
-    dialHeight: int = 100
-    formatValueCallback: FormatValueCallback = NO_FORMAT_CALLBACK
-    valueChangedCallback: ValueChangeCallback = NO_VALUE_CALLBACK
+    valueChangedCallback: ValueChangeCallback
+    valueRange:           ValueRange = field(default_factory=ValueRange)
+    dialLabel:            str        = DEFAULT_DIAL_LABEL
+    dialSize:             Size       = field(default_factory=lambda: Size(DEFAULT_DIAL_WIDTH, DEFAULT_DIAL_HEIGHT))
+    formatValueCallback:  FormatValueCallback = NO_FORMAT_CALLBACK
 
 
 class MacDialSelector(SizedStaticBox):
@@ -74,20 +124,19 @@ class MacDialSelector(SizedStaticBox):
         self.logger: Logger = getLogger(__name__)
 
         self._parameters: MacDialSelectorParameters = parameters
-        self._value: float = float(parameters.initialValue)
+        self._value:      float                     = float(parameters.valueRange.initialValue)
 
         self.SetSizerType('vertical')
         # noinspection PyUnresolvedReferences
         self.SetSizerProps(expand=True, proportion=1)
 
-        dialSize: Size = Size(parameters.dialWidth, parameters.dialHeight)
         self._dialCtrl: DialControl = DialControl(
             parent=self,
-            minValue=parameters.minValue,
-            maxValue=parameters.maxValue,
-            initialValue=parameters.initialValue,
-            step=parameters.step,
-            size=dialSize
+            minValue=parameters.valueRange.minValue,
+            maxValue=parameters.valueRange.maxValue,
+            initialValue=parameters.valueRange.initialValue,
+            step=parameters.valueRange.step,
+            size=parameters.dialSize
         )
         self._dialCtrl.SetSizerProps(expand=False, proportion=0, halign='center')
 
@@ -186,8 +235,7 @@ class MacDialSelector(SizedStaticBox):
         self._value = reportedValue
         self._displayValue(value=reportedValue)
 
-        if self._parameters.valueChangedCallback is not None:
-            self._parameters.valueChangedCallback(self._value)
+        self._parameters.valueChangedCallback(self._value)
 
         event.Skip()
 
@@ -202,10 +250,7 @@ class MacDialSelector(SizedStaticBox):
         if self._parameters.formatValueCallback is not None:
             displayLabel = self._parameters.formatValueCallback(value)
         else:
-            if value.is_integer():
-                displayLabel = f'{int(value)}'
-            else:
-                displayLabel = f'{value:.2f}'
+            displayLabel = f'{int(value)}' if value.is_integer() else f'{value:.2f}'
 
         self._valueTracker.SetLabel(displayLabel)
         self._valueTracker.Refresh()

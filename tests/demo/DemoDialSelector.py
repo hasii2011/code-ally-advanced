@@ -26,6 +26,7 @@ from codeallyadvanced.ui.widgets.DialControl import DialEvent
 from codeallyadvanced.ui.widgets.DialControl import EVT_DIAL_CHANGED
 from codeallyadvanced.ui.widgets.MacDialSelector import MacDialSelector
 from codeallyadvanced.ui.widgets.MacDialSelector import MacDialSelectorParameters
+from codeallyadvanced.ui.widgets.MacDialSelector import ValueRange
 
 FRAME_WIDTH: int = 520
 FRAME_HEIGHT: int = 420
@@ -106,13 +107,15 @@ class DemoDialSelector(App):
         boxContainer.SetSizerProps(expand=True, proportion=1)
 
         selectorParams: MacDialSelectorParameters = MacDialSelectorParameters(
-            minValue=100.0,
-            maxValue=1000.0,
-            initialValue=440.0,
-            step=10.0,
+            valueChangedCallback=self._onAdaptedValueChanged,
+            valueRange=ValueRange(
+                minValue=100.0,
+                maxValue=1000.0,
+                initialValue=440.0,
+                step=10.0
+            ),
             dialLabel='Frequency (Hz)',
-            formatValueCallback=self._formatAdaptedValue,
-            valueChangedCallback=self._onAdaptedValueChanged
+            formatValueCallback=self._formatAdaptedValue
         )
 
         macDialSelector: MacDialSelector = MacDialSelector(parent=boxContainer, parameters=selectorParams)

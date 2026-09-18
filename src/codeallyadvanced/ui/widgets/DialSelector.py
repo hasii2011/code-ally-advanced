@@ -1,20 +1,24 @@
+
+from logging import Logger
+from logging import getLogger
+
 from typing import Any
-from typing import Callable
+from typing import cast
 from typing import List
+from typing import Callable
 
 from dataclasses import dataclass
 
 from math import ceil
 
-from logging import Logger
-from logging import getLogger
-from typing import cast
 
 from wx import ALIGN_LEFT
 from wx import ID_ANY
+
 from wx import StaticText
 
 from wx.lib.agw.knobctrl import EVT_KC_ANGLE_CHANGED
+
 from wx.lib.agw.knobctrl import KnobCtrl
 from wx.lib.agw.knobctrl import KnobCtrlEvent
 
