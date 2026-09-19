@@ -18,6 +18,7 @@ from wx import MessageBox
 
 from wx import NewIdRef as wxNewIdRef
 from wx import OK
+from wx import Size
 
 from wx.lib.embeddedimage import PyEmbeddedImage
 
@@ -32,7 +33,7 @@ from click import version_option
 from codeallybasic.UnitTestBase import UnitTestBase
 
 FRAME_WIDTH:  int = 1900
-FRAME_HEIGHT: int = 400
+FRAME_HEIGHT: int = 650
 
 JSON_LOGGING_CONFIG_FILENAME: str = "testLoggingConfig.json"
 TEST_DIRECTORY:               str = 'tests'
@@ -77,15 +78,23 @@ class DemoPanel(SizedPanel):
             moduleObj: ModuleType     = self._importModule(imagePackage=imagePackage, embeddedPackageName=suffix)
 
             self._createButtonIcons(moduleObj=moduleObj, container=container)
+            self._adjustContainerHeight(container=container)
 
     def _createContainer(self, label: str) -> SizedStaticBox:
 
         container: SizedStaticBox = SizedStaticBox(self, label=label)
         container.SetSizerType('horizontal')
 
-        container.SetSizerProps(expand=True, proportion=1)
+        container.SetSizerProps(expand=True, proportion=0)
 
         return container
+
+    def _adjustContainerHeight(self, container: SizedStaticBox):
+
+        borders: tuple[int, int] = container.GetBordersForSizer()
+        maxBtnHeight: int = max((btn.GetBestSize().height for btn in container.GetChildren()), default=0)
+        totalHeight: int = maxBtnHeight + borders[0] + borders[1] + 12
+        container.SetMinSize(Size(-1, totalHeight))
 
     def _importModule(self, imagePackage: str, embeddedPackageName: str) -> ModuleType:
 
