@@ -27,18 +27,20 @@ if [ ! -d "${SOURCE_DIRECTORY}" ]; then
     exit 1
 fi
 
-export EXTRA_LARGE_ICONS='64x64'
-export LARGE_ICONS='32x32'
-export MEDIUM_ICONS='24x24'
-export SMALL_ICONS='16x16'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/iconSizes.env"
 
 mkdir -pv ${EXTRA_LARGE_ICONS}
+mkdir -pv ${VERY_LARGE_ICONS}
 mkdir -pv ${LARGE_ICONS}
 mkdir -pv ${MEDIUM_ICONS}
 mkdir -pv ${SMALL_ICONS}
 
 echo "Create ${EXTRA_LARGE_ICONS} icons"
 magick mogrify -path ${EXTRA_LARGE_ICONS} -resize ${EXTRA_LARGE_ICONS} "${SOURCE_DIRECTORY}"/*.png
+
+echo "Create ${VERY_LARGE_ICONS} icons"
+magick mogrify -path ${VERY_LARGE_ICONS} -resize ${VERY_LARGE_ICONS} "${SOURCE_DIRECTORY}"/*.png
 
 echo "Create ${LARGE_ICONS} icons"
 magick mogrify -path ${LARGE_ICONS} -resize ${LARGE_ICONS} "${SOURCE_DIRECTORY}"/*.png

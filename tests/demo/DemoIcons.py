@@ -40,6 +40,7 @@ TEST_DIRECTORY:               str = 'tests'
 EMBEDDED_PACKAGE_PREFIX: str = 'Embedded'
 
 EXTRA_LARGE: str = f'{EMBEDDED_PACKAGE_PREFIX}64'
+VERY_LARGE:  str = f'{EMBEDDED_PACKAGE_PREFIX}48'
 LARGE:       str = f'{EMBEDDED_PACKAGE_PREFIX}32'
 MEDIUM:      str = f'{EMBEDDED_PACKAGE_PREFIX}24'
 SMALL:       str = f'{EMBEDDED_PACKAGE_PREFIX}16'
@@ -66,10 +67,11 @@ class DemoPanel(SizedPanel):
     def _layoutAllIcons(self, imagePackage: str):
 
         for label, suffix in [
-            ("Extra Large Icons", EXTRA_LARGE),
-            ("Large Icons",       LARGE),
-            ("Medium Icons",      MEDIUM),
-            ("Small Icons",       SMALL)
+            ('Extra Large Icons', EXTRA_LARGE),
+            ('Very Large Icons',  VERY_LARGE),
+            ('Large Icons',       LARGE),
+            ('Medium Icons',      MEDIUM),
+            ('Small Icons',       SMALL)
         ]:
             container: SizedStaticBox = self._createContainer(label=label)
             moduleObj: ModuleType     = self._importModule(imagePackage=imagePackage, embeddedPackageName=suffix)

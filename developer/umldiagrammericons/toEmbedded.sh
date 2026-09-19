@@ -4,10 +4,8 @@
 # Assumes the XX_ICONS directory were created by the resize.sh script
 #
 
-export EXTRA_LARGE_ICONS='64x64'
-export LARGE_ICONS='32x32'
-export MEDIUM_ICONS='24x24'
-export SMALL_ICONS='16x16'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/iconSizes.env"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 <OUTPUT_DIR>"
@@ -30,11 +28,13 @@ if [ ! -d "$FULL_DIR" ]; then
 fi
 
 export EMBEDDED_FILE64="${FULL_DIR}/Embedded64.py"
+export EMBEDDED_FILE48="${FULL_DIR}/Embedded48.py"
 export EMBEDDED_FILE32="${FULL_DIR}/Embedded32.py"
 export EMBEDDED_FILE24="${FULL_DIR}/Embedded24.py"
 export EMBEDDED_FILE16="${FULL_DIR}/Embedded16.py"
 
 echo "from wx.lib.embeddedimage import PyEmbeddedImage" > "${EMBEDDED_FILE64}"
+echo "from wx.lib.embeddedimage import PyEmbeddedImage" > "${EMBEDDED_FILE48}"
 echo "from wx.lib.embeddedimage import PyEmbeddedImage" > "${EMBEDDED_FILE32}"
 echo "from wx.lib.embeddedimage import PyEmbeddedImage" > "${EMBEDDED_FILE24}"
 echo "from wx.lib.embeddedimage import PyEmbeddedImage" > "${EMBEDDED_FILE16}"
@@ -44,6 +44,12 @@ for imageFile in ${EXTRA_LARGE_ICONS}/*.png
 do
   justName="$(basename $imageFile .png)"
   img2py  -n ${justName} -a  -i $imageFile      ${EMBEDDED_FILE64}
+done
+
+for imageFile in ${VERY_LARGE_ICONS}/*.png
+do
+  justName="$(basename $imageFile .png)"
+  img2py  -n ${justName} -a  -i $imageFile      ${EMBEDDED_FILE48}
 done
 
 for imageFile in ${LARGE_ICONS}/*.png

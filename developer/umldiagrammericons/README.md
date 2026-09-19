@@ -15,6 +15,7 @@ The source icons are 1280x1280 high-definition .png files for maximum resolution
 The script creates .png files of the following sizes:
 
 * 64x64
+* 48x48
 * 32x32
 * 24x24
 * 16x16
