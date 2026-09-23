@@ -1,10 +1,8 @@
-![](https://github.com/hasii2011/code-ally-basic/blob/master/developer/agpl-license-web-badge-version-2-256x48.png "AGPL")
-
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/hasii2011/code-ally-advanced/graphs/commit-activity)
 [![CI](https://github.com/hasii2011/code-ally-advanced/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/hasii2011/code-ally-advanced/actions/workflows/ci.yml)
 [![PyPI version](https://badge.fury.io/py/codeallyadvanced.svg)](https://badge.fury.io/py/codeallyadvanced)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/hasii2011/code-ally-advanced/graphs/commit-activity)
-
-[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
+[![Made with Python](https://img.shields.io/badge/Made%20with-Python-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
 Host common UI artifacts for various projects I am developing
 
