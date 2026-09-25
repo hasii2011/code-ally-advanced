@@ -1,15 +1,25 @@
 
-from typing import Callable
-
 from logging import Logger
 from logging import getLogger
+
+from dataclasses import dataclass
 
 from wx.lib.sized_controls import SizedPanel
 
 from codeallybasic.Position import Position
 
 from codeallyadvanced.ui.widgets.DualSpinnerControl import DualSpinnerControl
+from codeallyadvanced.ui.widgets.DualSpinnerControl import DualSpinnerParameters
 from codeallyadvanced.ui.widgets.DualSpinnerControl import SpinnerValues
+from codeallyadvanced.ui.widgets.DualSpinnerControl import ValueChangeCallback
+
+
+@dataclass
+class PositionParameters(DualSpinnerParameters):
+    minValue:           int = 0
+    maxValue:           int = 2048
+    firstSpinnerLabel:  str = 'X:'
+    secondSpinnerLabel: str = 'Y:'
 
 
 class PositionControl(DualSpinnerControl):
@@ -23,36 +33,31 @@ class PositionControl(DualSpinnerControl):
     POSITION_MIN_VALUE: int = 0     # For the control only
     POSITION_MAX_VALUE: int = 2048  # For the control only
 
-    def __init__(self, sizedPanel: SizedPanel, displayText: str,
-                 valueChangedCallback: Callable,
-                 minValue: int = POSITION_MIN_VALUE, maxValue: int = POSITION_MAX_VALUE,
-                 setControlsSize: bool = True):
+    def __init__(self, parent: SizedPanel, parameters: PositionParameters):
         """
 
         Args:
-            sizedPanel          The parent window
-            displayText:        The text to display as the position  title
-            valueChangedCallback:  The method to call when the value changes;  The method should expect the
-                                    first parameter to be a Position argument that is the new value
-            minValue:       The minimum position value
-            maxValue:       The maximum position value
+            parent:     The parent window
+            parameters: Configuration parameters for the position control
         """
-        self.logger:                   Logger   = getLogger(__name__)
-        self._positionChangedCallback: Callable = valueChangedCallback
-        self._position:                Position = Position()
+        self.logger:                   Logger              = getLogger(__name__)
+        self._positionChangedCallback: ValueChangeCallback = parameters.valueChangedCallback
+        self._position:                Position            = Position()
 
-        super().__init__(sizedPanel, displayText, self._onSpinValueChangedCallback, minValue, maxValue, setControlsSize)
+        super().__init__(parent=parent, parameters=parameters)
 
     def _setPosition(self, newValue: Position):
         self._position = newValue
         self.spinnerValues = SpinnerValues(value0=newValue.x, value1=newValue.y)
 
+    # noinspection PyPropertyDefinition
     # noinspection PyTypeChecker
-    position = property(fdel=None, fget=None, fset=_setPosition, doc='Write only property to set values')
+    position = property(fget=None, fset=_setPosition, fdel=None, doc='Write only property to set values')
 
-    def _onSpinValueChangedCallback(self, spinnerValues: SpinnerValues):
+    def _notifyValueChanged(self, spinnerValues: SpinnerValues):
         self.logger.info(f'{spinnerValues}')
         self._position.x = spinnerValues.value0
         self._position.y = spinnerValues.value1
 
-        self._positionChangedCallback(self._position)
+        if self._positionChangedCallback is not None:
+            self._positionChangedCallback(self._position)

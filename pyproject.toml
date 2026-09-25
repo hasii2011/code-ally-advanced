@@ -9,7 +9,7 @@ description = 'Humberto`s Common wxPython UI Stuff'
 readme      = "README.md"
 authors     = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
 maintainers = [{name = 'Humberto A. Sanchez II', email = 'Humberto.A.Sanchez.II@gmail.com'}]
-keywords    = ['pyut', 'python', 'wxPython', 'UI', 'umldiagrammer']
+keywords    = ['uml', 'python', 'wxPython', 'UI', 'umldiagrammer']
 license     = 'AGPL-1.0-or-later'
 license-files = ['LICENSE']
 classifiers = [

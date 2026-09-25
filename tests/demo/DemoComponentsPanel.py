@@ -6,6 +6,7 @@ from pathlib import Path
 
 from wx import MessageDialog
 from wx import OK
+from wx import Notebook
 
 from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedStaticBox
@@ -16,10 +17,13 @@ from codeallybasic.Position import Position
 from codeallyadvanced.ui.widgets.DialSelector import DialSelector
 from codeallyadvanced.ui.widgets.DialSelector import DialSelectorParameters
 from codeallyadvanced.ui.widgets.DimensionsControl import DimensionsControl
+from codeallyadvanced.ui.widgets.DimensionsControl import DimensionsParameters
 from codeallyadvanced.ui.widgets.DirectorySelector import DirectorySelector
 from codeallyadvanced.ui.widgets.MinMaxControl import MinMax
 from codeallyadvanced.ui.widgets.MinMaxControl import MinMaxControl
+from codeallyadvanced.ui.widgets.MinMaxControl import MinMaxParameters
 from codeallyadvanced.ui.widgets.PositionControl import PositionControl
+from codeallyadvanced.ui.widgets.PositionControl import PositionParameters
 
 
 class DemoComponentsPanel(SizedPanel):
@@ -33,12 +37,37 @@ class DemoComponentsPanel(SizedPanel):
 
         self.SetSizerType('vertical')
 
-        self._layoutSpinnerWidgets(parentPanel=self)
-        self._layoutDirectorySelector(parentPanel=self)
-        self._layoutDialSelector(parentPanel=self)
+        self._layoutNotebook(parentPanel=self)
 
         self.Fit()
         self.SetMinSize(self.GetSize())
+
+    def _layoutNotebook(self, parentPanel: SizedPanel):
+        """
+
+        Args:
+            parentPanel:
+
+        """
+
+        notebook: Notebook = Notebook(parent=parentPanel)
+        # noinspection PyUnresolvedReferences
+        notebook.SetSizerProps(expand=True, proportion=1)
+
+        spinnersPage: SizedPanel = SizedPanel(parent=notebook)
+        spinnersPage.SetSizerType('vertical')
+        self._layoutSpinnerWidgets(parentPanel=spinnersPage)
+        notebook.AddPage(page=spinnersPage, text='Spinners')
+
+        directoryPage: SizedPanel = SizedPanel(parent=notebook)
+        directoryPage.SetSizerType('vertical')
+        self._layoutDirectorySelector(parentPanel=directoryPage)
+        notebook.AddPage(page=directoryPage, text='Directory Selector')
+
+        dialPage: SizedPanel = SizedPanel(parent=notebook)
+        dialPage.SetSizerType('vertical')
+        self._layoutDialSelector(parentPanel=dialPage)
+        notebook.AddPage(page=dialPage, text='Dial Selector')
 
     def _layoutSpinnerWidgets(self, parentPanel: SizedPanel):
 
@@ -49,23 +78,34 @@ class DemoComponentsPanel(SizedPanel):
         demoPanel.SetSizerType('vertical')
         demoPanel.SetSizerProps(expand=True, proportion=1)
 
-        positionControl: PositionControl = PositionControl(sizedPanel=demoPanel, displayText='Demo Position',
-                                                           minValue=0, maxValue=2048,
-                                                           valueChangedCallback=self._positionChanged,
-                                                           setControlsSize=True)
+        posParams: PositionParameters = PositionParameters(
+            caption='Demo Position',
+            minValue=0,
+            maxValue=2048,
+            valueChangedCallback=self._positionChanged,
+        )
+        positionControl: PositionControl = PositionControl(parent=demoPanel, parameters=posParams)
 
-        dimensionsControls: DimensionsControl = DimensionsControl(sizedPanel=demoPanel, displayText='Demo Dimensions',
-                                                                  minValue=480, maxValue=4096,
-                                                                  valueChangedCallback=self._dimensionsChanged,
-                                                                  setControlsSize=True)
+        dimParams: DimensionsParameters = DimensionsParameters(
+            caption='Demo Dimensions',
+            minValue=480,
+            maxValue=4096,
+            valueChangedCallback=self._dimensionsChanged,
+        )
+        dimensionsControls: DimensionsControl = DimensionsControl(parent=demoPanel, parameters=dimParams)
 
-        minMaxX: MinMaxControl = MinMaxControl(sizedPanel=demoPanel, displayText='Minimum/Maximum Values',
-                                               minValue=-1024, maxValue=1024,
-                                               valueChangedCallback=self._onMinMaxChanged,
-                                               setControlsSize=False)
+        minMaxParams: MinMaxParameters = MinMaxParameters(
+            caption='Minimum/Maximum Values',
+            minValue=-1024,
+            maxValue=1024,
+            valueChangedCallback=self._onMinMaxChanged,
+        )
+        minMaxX: MinMaxControl = MinMaxControl(parent=demoPanel, parameters=minMaxParams)
 
-        positionControl.SetSizerProps(expand=True, proportion=1)
-        dimensionsControls.SetSizerProps(expand=True, proportion=1)
+        positionControl.SetSizerProps(expand=True, proportion=0)
+        dimensionsControls.SetSizerProps(expand=True, proportion=0)
+
+        minMaxX.SetSizerProps(expand=True, proportion=0)
 
         positionControl.position = Position(0, 2048)
         dimensionsControls.dimensions   = Dimensions(480, 2048)

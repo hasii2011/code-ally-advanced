@@ -20,8 +20,8 @@ from codeallybasic.UnitTestBase import UnitTestBase
 from tests.demo.DemoComponentsPanel import DemoComponentsPanel
 
 
-FRAME_WIDTH:  int = 400
-FRAME_HEIGHT: int = 650
+FRAME_WIDTH:  int = 440
+FRAME_HEIGHT: int = 450
 
 JSON_LOGGING_CONFIG_FILENAME: str = "testLoggingConfig.json"
 TEST_DIRECTORY:               str = 'tests'

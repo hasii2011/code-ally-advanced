@@ -1,5 +1,8 @@
 
+from typing import Any
 from typing import Callable
+from typing import cast
+from typing import Optional
 
 from logging import Logger
 from logging import getLogger
@@ -9,9 +12,11 @@ from dataclasses import dataclass
 from wx import Size
 from wx import ID_ANY
 from wx import EVT_TEXT
+from wx import EVT_SPINCTRL
 from wx import BORDER_THEME
 
 from wx import SpinCtrl
+from wx import StaticText
 from wx import CommandEvent
 
 from wx import NewIdRef as wxNewIdRef
@@ -19,8 +24,24 @@ from wx import NewIdRef as wxNewIdRef
 from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedStaticBox
 
-SPINNER_WIDTH:  int = 60
-SPINNER_HEIGHT: int = 35
+SPINNER_WIDTH:          int = 80
+SPINNER_HEIGHT:         int = -1    # In wxWidgets, passing -1 for height uses native platform control height
+DEFAULT_CONTROL_HEIGHT: int = 58
+
+ValueChangeCallback = Callable[[Any], None]
+NO_VALUE_CALLBACK: ValueChangeCallback = cast(ValueChangeCallback, None)
+
+
+@dataclass
+class DualSpinnerParameters:
+    caption:              str                 = ''
+    valueChangedCallback: ValueChangeCallback = NO_VALUE_CALLBACK
+    minValue:             int                 = 100
+    maxValue:             int                 = 300
+    firstSpinnerLabel:    str                 = ''
+    secondSpinnerLabel:   str                 = ''
+    proportion:           int                 = 0
+    expand:               bool                = True
 
 
 @dataclass
@@ -42,52 +63,83 @@ class DualSpinnerControl(SizedStaticBox):
 
     dscLogger: Logger = getLogger(__name__)     # Used as base class; So needs unique logger
 
-    def __init__(self, sizedPanel: SizedPanel, boxTitle: str,
-                 valueChangedCallback: Callable,
-                 minValue: int = DEFAULT_MIN_VALUE, maxValue: int = DEFAULT_MAX_VALUE,
-                 setControlsSize: bool = True,
-                 ):
+    def __init__(self, parent: SizedPanel, parameters: DualSpinnerParameters):
         """
 
         Args:
-            sizedPanel   The parent panel
-            boxTitle:    The text to display as the static box title
-            valueChangedCallback:  The method to call when the value changes;  The method should expect the
-                                   first parameter to be an object of type SpinnerValues
-            minValue:       The minimum value for the spinner values
-            maxValue:       The maximum value for the spinner values
-            setControlsSize:  Whether to specify the spinner size;  This is a hack
-            because in some SizedPanels the spinners are appropriately sized and in others they
-            are not
+            parent:     The parent panel
+            parameters: Configuration parameters for the dual spinner control
         """
 
-        super().__init__(sizedPanel, ID_ANY, boxTitle, style=BORDER_THEME)
+        super().__init__(parent, ID_ANY, parameters.caption, style=BORDER_THEME)
 
         self.SetSizerType('horizontal')
         # noinspection PyUnresolvedReferences
-        # self.SetSizerProps(expand=True, proportion=1, border=(('left','right', 'bottom'),5))
-        self.SetSizerProps(expand=True, proportion=1)
+        self.SetSizerProps(expand=parameters.expand, proportion=parameters.proportion)
 
-        self._callback: Callable = valueChangedCallback
+        self._callback: ValueChangeCallback = parameters.valueChangedCallback
 
         self._wxSpinner0Id: int = wxNewIdRef()
         self._wxSpinner1Id: int = wxNewIdRef()
 
-        if setControlsSize is True:
-            self._spinner0: SpinCtrl = SpinCtrl(self, self._wxSpinner0Id, "", size=Size(SPINNER_WIDTH, SPINNER_HEIGHT))
-            self._spinner1: SpinCtrl = SpinCtrl(self, self._wxSpinner1Id, "", size=Size(SPINNER_WIDTH, SPINNER_HEIGHT))
-        else:
-            self._spinner0 = SpinCtrl(self, self._wxSpinner0Id, "")
-            self._spinner1 = SpinCtrl(self, self._wxSpinner1Id, "")
+        self._firstSpinnerLabel:  Optional[StaticText] = None
+        self._secondSpinnerLabel: Optional[StaticText] = None
 
-        self._spinner0.SetRange(minValue, maxValue)
-        self._spinner1.SetRange(minValue, maxValue)
+        self._spinner0: SpinCtrl = cast(SpinCtrl, None)
+        self._spinner1: SpinCtrl = cast(SpinCtrl, None)
 
-        self._spinnerValues: SpinnerValues = SpinnerValues(minValue, maxValue)
-        #
-        # Bind to the text control;  Then we can type in or spin
-        self.Bind(EVT_TEXT, self._onSpinnerValueChanged, self._spinner0)
-        self.Bind(EVT_TEXT, self._onSpinnerValueChanged, self._spinner1)
+        self._createControls(parameters)
+        self._bindEventHandlers()
+
+        self.SetMinSize(Size(-1, DEFAULT_CONTROL_HEIGHT))
+        self.SetMaxSize(Size(-1, DEFAULT_CONTROL_HEIGHT))
+
+    def _createControls(self, parameters: DualSpinnerParameters):
+        """
+        Instantiate labels, spin controls, and configure ranges and initial values
+
+        Args:
+            parameters: Configuration parameters for the dual spinner control
+        """
+        if len(parameters.firstSpinnerLabel) > 0:
+            self._firstSpinnerLabel = StaticText(self, ID_ANY, parameters.firstSpinnerLabel)
+            self._firstSpinnerLabel.SetSizerProps(valign='centre', border=(('right',), 5))
+
+        self._spinner0 = SpinCtrl(self, self._wxSpinner0Id, '', size=Size(SPINNER_WIDTH, SPINNER_HEIGHT))
+        self._spinner0.SetSizerProps(valign='centre', border=(('right',), 10))
+
+        if len(parameters.secondSpinnerLabel) > 0:
+            self._secondSpinnerLabel = StaticText(self, ID_ANY, parameters.secondSpinnerLabel)
+            self._secondSpinnerLabel.SetSizerProps(valign='centre', border=(('right',), 5))
+
+        self._spinner1 = SpinCtrl(self, self._wxSpinner1Id, '', size=Size(SPINNER_WIDTH, SPINNER_HEIGHT))
+        self._spinner1.SetSizerProps(valign='centre')
+
+        self._spinner0.SetRange(parameters.minValue, parameters.maxValue)
+        self._spinner1.SetRange(parameters.minValue, parameters.maxValue)
+
+        self._spinnerValues: SpinnerValues = SpinnerValues(parameters.minValue, parameters.maxValue)
+
+    def _bindEventHandlers(self):
+        """
+        Bind to both text and spin events for typing and arrow clicks
+
+        """
+        self.Bind(EVT_TEXT,     self._onSpinnerValueChanged, self._spinner0)
+        self.Bind(EVT_TEXT,     self._onSpinnerValueChanged, self._spinner1)
+        self.Bind(EVT_SPINCTRL, self._onSpinnerValueChanged, self._spinner0)
+        self.Bind(EVT_SPINCTRL, self._onSpinnerValueChanged, self._spinner1)
+
+    def DoGetBestSize(self) -> Size:
+        """
+        Calculate the best size for this static box container, keeping
+        a compact vertical height suitable for spinner controls.
+        """
+        sizerBest:  Size            = self.GetSizer().GetMinSize()
+        borders:    tuple[int, int] = self.GetBordersForSizer()
+        totalWidth: int             = sizerBest.width + (borders[1] * 2) + 10
+
+        return Size(totalWidth, DEFAULT_CONTROL_HEIGHT)
 
     def _setSpinnerValues(self, spinnerValues: SpinnerValues):
         """
@@ -100,8 +152,9 @@ class DualSpinnerControl(SizedStaticBox):
         self._spinner1.SetValue(spinnerValues.value1)
         self.dscLogger.info(f'range: {self._spinner0.GetRange()} - {self._spinner0.GetValue()=} {self._spinner1.GetValue()=}')
 
+    # noinspection PyPropertyDefinition
     # noinspection PyTypeChecker
-    spinnerValues = property(fset=_setSpinnerValues, doc='Write only property to initialize spinner values')
+    spinnerValues = property(fget=None, fset=_setSpinnerValues, fdel=None, doc='Write only property to initialize spinner values')
 
     def enableControls(self, value: bool):
         """
@@ -113,20 +166,31 @@ class DualSpinnerControl(SizedStaticBox):
         if value is True:
             self._spinner0.Enable()
             self._spinner1.Enable()
+            if self._firstSpinnerLabel is not None:
+                self._firstSpinnerLabel.Enable()
+            if self._secondSpinnerLabel is not None:
+                self._secondSpinnerLabel.Enable()
         else:
             self._spinner0.Disable()
             self._spinner1.Disable()
+            if self._firstSpinnerLabel is not None:
+                self._firstSpinnerLabel.Disable()
+            if self._secondSpinnerLabel is not None:
+                self._secondSpinnerLabel.Disable()
 
     def _onSpinnerValueChanged(self, event: CommandEvent):
 
         eventId:  int = event.GetId()
-        newValue: int = event.GetInt()
 
         if eventId == self._wxSpinner0Id:
-            self._spinnerValues.value0  = newValue
+            self._spinnerValues.value0 = self._spinner0.GetValue()
         elif eventId == self._wxSpinner1Id:
-            self._spinnerValues.value1  = newValue
+            self._spinnerValues.value1 = self._spinner1.GetValue()
         else:
             self.dscLogger.error(f'Unknown spinner event id: {eventId}')
 
-        self._callback(self._spinnerValues)
+        self._notifyValueChanged(self._spinnerValues)
+
+    def _notifyValueChanged(self, spinnerValues: SpinnerValues):
+        if self._callback is not None:
+            self._callback(spinnerValues)
