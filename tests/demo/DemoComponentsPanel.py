@@ -20,6 +20,7 @@ from codeallyadvanced.ui.widgets.DialSelector import DialSelectorParameters
 from codeallyadvanced.ui.widgets.DimensionsControl import DimensionsControl
 from codeallyadvanced.ui.widgets.DimensionsControl import DimensionsParameters
 from codeallyadvanced.ui.widgets.DirectorySelector import DirectorySelector
+from codeallyadvanced.ui.widgets.DirectorySelector import DirectorySelectorParameters
 from codeallyadvanced.ui.widgets.MinMaxControl import MinMax
 from codeallyadvanced.ui.widgets.MinMaxControl import MinMaxControl
 from codeallyadvanced.ui.widgets.MinMaxControl import MinMaxParameters
@@ -114,26 +115,16 @@ class DemoComponentsPanel(SizedPanel):
 
     def _layoutDirectorySelector(self, parentPanel: SizedPanel):
 
-        verticalPanel: SizedPanel = SizedPanel(parentPanel)
-        verticalPanel.SetSizerType('vertical')
-        verticalPanel.SetSizerProps(expand=True, proportion=1)
+        noCallbackParams: DirectorySelectorParameters = DirectorySelectorParameters(
+            caption='Directory Selector',
+        )
+        DirectorySelector(parent=parentPanel, parameters=noCallbackParams)
 
-        panelNoCallback: SizedStaticBox = SizedStaticBox(verticalPanel, label='Directory Selector')
-        panelNoCallback.SetMinSize(Size(-1, 72))
-        panelNoCallback.SetSizerProps(expand=True, proportion=0)
-
-        dirSelectorNoCallback: DirectorySelector = DirectorySelector(parent=panelNoCallback)
-        dirSelectorNoCallback.SetSizerProps(expand=True, proportion=0, border=(('top',), 8))
-
-        panelWithCallback: SizedStaticBox = SizedStaticBox(verticalPanel, label='Directory Selector w/Callback')
-        panelWithCallback.SetMinSize(Size(-1, 72))
-        panelWithCallback.SetSizerProps(expand=True, proportion=0)
-
-        dirSelectorWithCallback: DirectorySelector = DirectorySelector(
-            parent=panelWithCallback,
+        withCallbackParams: DirectorySelectorParameters = DirectorySelectorParameters(
+            caption='Directory Selector w/Callback',
             pathChangedCallback=self._pathChangedCallback,
         )
-        dirSelectorWithCallback.SetSizerProps(expand=True, proportion=0, border=(('top',), 8))
+        DirectorySelector(parent=parentPanel, parameters=withCallbackParams)
 
     def _layoutDialSelector(self, parentPanel: SizedPanel):
 

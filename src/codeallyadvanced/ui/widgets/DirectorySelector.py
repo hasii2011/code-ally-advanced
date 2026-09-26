@@ -1,9 +1,12 @@
 
+from dataclasses import dataclass
 from logging import Logger
 from logging import getLogger
 
 from pathlib import Path
 from typing import Callable
+from typing import Optional
+from typing import cast
 
 from wx import BORDER_THEME
 from wx import ID_ANY
@@ -22,18 +25,26 @@ from wx import Size
 from wx import TextCtrl
 
 from wx.lib.sized_controls import SizedPanel
+from wx.lib.sized_controls import SizedStaticBox
 
 DEFAULT_MIN_WIDTH:      int  = 280
 DEFAULT_MAX_WIDTH:      int  = 600
-DEFAULT_CONTROL_HEIGHT: int  = 36
+DEFAULT_CONTROL_HEIGHT: int  = 58
 FOLDER_BITMAP_SIZE:     Size = Size(16, 16)
 
 DirectoryPathChangedCallback = Callable[[Path], None]
+NO_PATH_CALLBACK: DirectoryPathChangedCallback = cast(DirectoryPathChangedCallback, None)
 
-CALLBACK_PARAMETER = 'pathChangedCallback'
+
+@dataclass
+class DirectorySelectorParameters:
+    caption:             str                          = ''
+    pathChangedCallback: DirectoryPathChangedCallback = NO_PATH_CALLBACK
+    expand:              bool                         = True
+    proportion:          int                          = 0
 
 
-class DirectorySelector(SizedPanel):
+class DirectorySelector(SizedStaticBox):
     """
     A horizontal row container used for selecting and displaying a filesystem directory.
 
@@ -52,31 +63,37 @@ class DirectorySelector(SizedPanel):
         * Two-way path binding: Provides a `directoryPath` property (getter/setter)
           to read or programmatically update the selected Path.
     """
-    def __init__(self, *args, **kwargs):
+    DEFAULT_MIN_WIDTH:      int  = DEFAULT_MIN_WIDTH
+    DEFAULT_MAX_WIDTH:      int  = DEFAULT_MAX_WIDTH
+    DEFAULT_CONTROL_HEIGHT: int  = DEFAULT_CONTROL_HEIGHT
+    FOLDER_BITMAP_SIZE:     Size = FOLDER_BITMAP_SIZE
+
+    def __init__(
+        self,
+        parent:     SizedPanel,
+        parameters: Optional[DirectorySelectorParameters] = None,
+        caption:    str                                   = '',
+    ):
         """
-        Initialize the DirectorySelector panel and controls.
+        Initialize the DirectorySelector static box and child controls.
 
-        Extracts the optional 'pathChangedCallback' keyword argument before
-        forwarding all remaining positional and keyword arguments to SizedPanel.
-
-        Keyword Args:
-            pathChangedCallback (DirectoryPathChangedCallback, optional): A callable
-                accepting a `pathlib.Path` instance, invoked when the user selects a
-                new directory via the browse dialog. Defaults to None.
-            *args: Positional arguments forwarded to SizedPanel (e.g. parent).
-            **kwargs: Keyword arguments forwarded to SizedPanel.
+        Args:
+            parent:     The parent sized panel
+            parameters: Configuration parameters for the directory selector
+            caption:    Optional caption string used if parameters is not provided
         """
 
         self.logger: Logger = getLogger(__name__)
 
-        self._directorPathChangedCallback: DirectoryPathChangedCallback | None = kwargs.get(CALLBACK_PARAMETER, None)
-        if self._directorPathChangedCallback is not None:
-            kwargs.pop(CALLBACK_PARAMETER)
+        params: DirectorySelectorParameters = parameters if parameters is not None else DirectorySelectorParameters(caption=caption)
 
-        super().__init__(style=BORDER_THEME, *args, **kwargs)
+        super().__init__(parent, ID_ANY, params.caption, style=BORDER_THEME)
 
         self.SetSizerType('horizontal')
-        self.SetSizerProps(expand=True, proportion=0)
+        # noinspection PyUnresolvedReferences
+        self.SetSizerProps(expand=params.expand, proportion=params.proportion)
+
+        self._directorPathChangedCallback: DirectoryPathChangedCallback = params.pathChangedCallback
 
         textCtrl: TextCtrl = TextCtrl(self)
         textCtrl.SetSizerProps(valign='centre', proportion=1, border=(('right',), 5))
@@ -88,17 +105,17 @@ class DirectorySelector(SizedPanel):
         textCtrl.SetValue('')
         textCtrl.SetEditable(False)
 
-        self._textDiagramsDirectory = textCtrl
-        self._directoryPath:       Path = Path('')
+        self._textDiagramsDirectory: TextCtrl = textCtrl
+        self._directoryPath:         Path     = Path('')
 
         self.Bind(EVT_BUTTON, self._onSelectDiagramsDirectory, selectButton)
 
         self.SetMinSize(Size(DEFAULT_MIN_WIDTH, DEFAULT_CONTROL_HEIGHT))
-        self.SetMaxSize(Size(DEFAULT_MAX_WIDTH, -1))
+        self.SetMaxSize(Size(DEFAULT_MAX_WIDTH, DEFAULT_CONTROL_HEIGHT))
 
     def DoGetBestSize(self) -> Size:
         """
-        Calculate the best size for this directory selector row.
+        Calculate the best size for this directory selector static box.
         """
         return Size(400, DEFAULT_CONTROL_HEIGHT)
 
