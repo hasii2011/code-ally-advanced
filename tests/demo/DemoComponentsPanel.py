@@ -7,6 +7,7 @@ from pathlib import Path
 from wx import MessageDialog
 from wx import OK
 from wx import Notebook
+from wx import Size
 
 from wx.lib.sized_controls import SizedPanel
 from wx.lib.sized_controls import SizedStaticBox
@@ -118,14 +119,21 @@ class DemoComponentsPanel(SizedPanel):
         verticalPanel.SetSizerProps(expand=True, proportion=1)
 
         panelNoCallback: SizedStaticBox = SizedStaticBox(verticalPanel, label='Directory Selector')
-        panelNoCallback.SetSizerProps(expand=True, proportion=1)
+        panelNoCallback.SetMinSize(Size(-1, 72))
+        panelNoCallback.SetSizerProps(expand=True, proportion=0)
 
-        DirectorySelector(parent=panelNoCallback)
+        dirSelectorNoCallback: DirectorySelector = DirectorySelector(parent=panelNoCallback)
+        dirSelectorNoCallback.SetSizerProps(expand=True, proportion=0, border=(('top',), 8))
 
         panelWithCallback: SizedStaticBox = SizedStaticBox(verticalPanel, label='Directory Selector w/Callback')
-        panelWithCallback.SetSizerProps(expand=True, proportion=1)
+        panelWithCallback.SetMinSize(Size(-1, 72))
+        panelWithCallback.SetSizerProps(expand=True, proportion=0)
 
-        DirectorySelector(parent=panelWithCallback, pathChangedCallback=self._pathChangedCallback)
+        dirSelectorWithCallback: DirectorySelector = DirectorySelector(
+            parent=panelWithCallback,
+            pathChangedCallback=self._pathChangedCallback,
+        )
+        dirSelectorWithCallback.SetSizerProps(expand=True, proportion=0, border=(('top',), 8))
 
     def _layoutDialSelector(self, parentPanel: SizedPanel):
 
